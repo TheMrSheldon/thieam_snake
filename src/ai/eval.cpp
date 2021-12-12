@@ -114,6 +114,12 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
     }
 }
 
+static inline float relEval(float player, float opponent) noexcept {
+	if (player >= opponent)
+		return player/(player + opponent);
+	return -opponent/(player + opponent);
+}
+
 float Evaluator::evaluate(const State& state) noexcept {
 	auto eval = evaluate(state.state);
 	if (eval.winner != ls::Winner::None) {
@@ -123,5 +129,5 @@ float Evaluator::evaluate(const State& state) noexcept {
 			return 100;
 		return -100;
 	}
-	return 0;
+	return .2f*relEval(eval.snakes[0].health, eval.snakes[1].health) + 5*relEval(eval.snakes[0].mobility, eval.snakes[1].mobility) + .05f*relEval(eval.snakes[0].foodInReach, eval.snakes[1].foodInReach);
 }
