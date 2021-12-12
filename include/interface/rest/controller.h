@@ -48,7 +48,7 @@ namespace rest {
 		}
 
 		ENDPOINT("POST", "/move", move, BODY_DTO(Object<rest::dto::Gameinfo>, body)) {
-			auto state = FromDTO2(body->board);
+			auto state = FromDTO2(body->board, body->you->id.get());
 			auto move = agent.getAction(FromDTO(body->game), body->turn, state);
 			auto dto = rest::dto::Move::createShared();
 			if (move == MoveDown)
@@ -74,14 +74,18 @@ namespace rest {
 				.source = info->source
 			};
 		}
-		static ls::State FromDTO2(const Object<rest::dto::Board>& info) {
-			auto width = info->width;//TODO: our snake should always be at index 0
+		static ls::State FromDTO2(const Object<rest::dto::Board>& info, const std::string* id) {
+			auto width = info->width;
 			auto height = info->height;
 			std::vector<Snake> snakes;
 			std::vector<Position> food = FromDTO3(info->food);
 			for (auto& s : *(info->snakes)) {
-				//TODO: load direction
-				snakes.emplace_back(Snake(FromDTO3(s->body), MoveDown, s->health));
+				if (id != nullptr && *id == *(s->id))
+					snakes.emplace_back(FromDTO3(s->body), s->health);
+			}
+			for (auto& s : *(info->snakes)) {
+				if (id == nullptr || *id != *(s->id))
+					snakes.emplace_back(FromDTO3(s->body), s->health);
 			}
 			return ls::State((unsigned)width.getValue(0), (unsigned)height.getValue(0), snakes, food);
 		}

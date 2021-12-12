@@ -6,6 +6,7 @@
 #include <libsnake/gamemodes/duel.h>
 
 #include <iostream>
+#include <bitset>
 
 class State {
 	using LState = ls::State;
@@ -15,9 +16,7 @@ public:
 	LState state;
 
 public:
-	State(LState state, Move p1Move = 0) : state(state), p1Move(p1Move) {
-		state.print(std::cout);
-	}
+	State(LState state, Move p1Move = 0) : state(state), p1Move(p1Move) {}
 
 	int getTurn() const noexcept {
 		return (p1Move == 0)? 0: 1;
@@ -44,6 +43,6 @@ public:
 	State afterMove(Move action) const noexcept {
 		if (p1Move != 0)
 			return State(gamemode.stepState(state, {p1Move, action}));
-		return State(state, p1Move);
+		return State(state, action);
 	}
 };

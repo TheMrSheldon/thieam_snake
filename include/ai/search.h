@@ -38,7 +38,6 @@ public:
 		for (const auto& action : state.getValidActions()) {
 			auto next = state.afterMove(action);
 			auto score = iterativeDeepening(next, eval);
-			printf("[%i] -> %f\n", action, score);
 			if (score >= best_score) {
 				best = action;
 				best_score = score;

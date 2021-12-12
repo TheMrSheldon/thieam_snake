@@ -119,7 +119,7 @@ float Evaluator::evaluate(const State& state) noexcept {
 	if (eval.winner != ls::Winner::None) {
 		if (eval.winner.containsAll(ls::Winner::Player1 | ls::Winner::Player2))
 			return -50;
-		else if (eval.winner.containsAny(ls::Winner::Player2))
+		else if (eval.winner.containsAny(ls::Winner::Player1))
 			return 100;
 		return -100;
 	}
