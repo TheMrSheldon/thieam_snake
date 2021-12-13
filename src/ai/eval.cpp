@@ -23,22 +23,24 @@ Evaluation Evaluator::evaluate(const ls::State& state) noexcept {
     if (!ls::gm::Duel.isGameOver(state)) {
         result.snakes[0].health = state.getSnake(0).getHealth();
         result.snakes[1].health = state.getSnake(1).getHealth();
+		result.snakes[0].choice = ls::gm::Duel.getUnblockedActions(state, 0).size();
+		result.snakes[1].choice = ls::gm::Duel.getUnblockedActions(state, 1).size();
         scanProximity(state, result);
     }
     return result;
 }
 
-bool Evaluator::isInEnvBuff(const Position& pos) const noexcept {
+bool Evaluator::isInEnvBuff(const ls::Position& pos) const noexcept {
     return pos.x >= 0 && pos.y >= 0 && pos.x < scan_area_width && pos.y < scan_area_width;
 }
-uint8_t& Evaluator::getEnvBuffEntry(const Position& pos) noexcept {
+uint8_t& Evaluator::getEnvBuffEntry(const ls::Position& pos) noexcept {
     return envbuffer[pos.x + scan_area_width*pos.y];
 }
 
 UNROLL
 void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexcept {
     struct PosStr {
-        Position pos;
+        ls::Position pos;
         unsigned dist_rem;
     };
     
@@ -47,7 +49,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
     std::fill(envbuffer.begin(), envbuffer.end(), 0); //set all entries to zero
     const auto& snake1Pos = state.getSnake(0).getHeadPos();
     const auto& snake2Pos = state.getSnake(1).getHeadPos();
-    const Position middle(scan_radius, scan_radius);
+    const ls::Position middle(scan_radius, scan_radius);
     for (const auto& tail : state.getSnake(0).getBody()) {
         if (isInEnvBuff(tail - snake1Pos + middle))
             getEnvBuffEntry(tail - snake1Pos + middle) |= 1;
@@ -72,16 +74,16 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
         const auto& snakePos = state.getSnake(snake).getHeadPos();
         if (snakePos.x < scan_radius)
             for (unsigned y = 0; y < scan_area_width; y++)
-                getEnvBuffEntry(Position(-1-snakePos.x + middle.x, y)) |= bit;
+                getEnvBuffEntry(ls::Position(-1-snakePos.x + middle.x, y)) |= bit;
         if (snakePos.y < scan_radius)
             for (unsigned x = 0; x < scan_area_width; x++)
-                getEnvBuffEntry(Position(x, -1-snakePos.y + middle.y)) |= bit;
+                getEnvBuffEntry(ls::Position(x, -1-snakePos.y + middle.y)) |= bit;
         if (state.getWidth() - snakePos.x <= scan_radius)
             for (unsigned y = 0; y < scan_area_width; y++)
-                getEnvBuffEntry(Position(state.getWidth()-snakePos.x + middle.x, y)) |= bit;
+                getEnvBuffEntry(ls::Position(state.getWidth()-snakePos.x + middle.x, y)) |= bit;
         if (state.getHeight() - snakePos.y <= scan_radius)
             for (unsigned x = 0; x < scan_area_width; x++)
-                getEnvBuffEntry(Position(x, state.getHeight()-snakePos.y + middle.y)) |= bit;
+                getEnvBuffEntry(ls::Position(x, state.getHeight()-snakePos.y + middle.y)) |= bit;
     }
     //
 
@@ -96,7 +98,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
             auto cur = frontier.front();
             frontier.pop_front();
             if (cur.dist_rem > 0) {
-                for (const auto dir : {Position(-1,0), Position(1,0), Position(0,-1), Position(0,1)}) {
+                for (const auto dir : {ls::Position(-1,0), ls::Position(1,0), ls::Position(0,-1), ls::Position(0,1)}) {
                     const bool inbound = cur.pos.x > 0 && cur.pos.y && cur.pos.x < scan_area_width-1 && cur.pos.y < scan_area_width-1;
                     uint8_t& envbuff = getEnvBuffEntry(cur.pos + dir);
                     if (inbound && !(envbuff & bit)) {
@@ -129,5 +131,5 @@ float Evaluator::evaluate(const State& state) noexcept {
 			return 100;
 		return -100;
 	}
-	return .2f*relEval(eval.snakes[0].health, eval.snakes[1].health) + 5*relEval(eval.snakes[0].mobility, eval.snakes[1].mobility) + .05f*relEval(eval.snakes[0].foodInReach, eval.snakes[1].foodInReach);
+	return .2f*relEval(eval.snakes[0].health, eval.snakes[1].health) + 5*relEval(eval.snakes[0].mobility, eval.snakes[1].mobility) + .05f*relEval(eval.snakes[0].foodInReach, eval.snakes[1].foodInReach) + 3*relEval(eval.snakes[0].choice, eval.snakes[1].choice);
 }

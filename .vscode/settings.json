@@ -1,4 +1,8 @@
 {
     "editor.insertSpaces": false,
-    "editor.detectIndentation": false
+	"editor.detectIndentation": false,
+	"files.associations": {
+		"vector": "cpp",
+		"xiosbase": "cpp"
+	}
 }

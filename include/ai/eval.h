@@ -13,6 +13,7 @@ struct SnakeEval {
     float mobility_per_area;
     unsigned health;
     unsigned foodInReach;
+	unsigned choice;
 };
 
 struct Evaluation {
@@ -29,8 +30,8 @@ private:
     std::vector<uint8_t> envbuffer;
 
     inline void scanProximity(const ls::State& state, Evaluation& results) noexcept;
-    inline bool isInEnvBuff(const Position& pos) const noexcept;
-    inline uint8_t& getEnvBuffEntry(const Position& pos) noexcept;
+    inline bool isInEnvBuff(const ls::Position& pos) const noexcept;
+    inline uint8_t& getEnvBuffEntry(const ls::Position& pos) noexcept;
 
     Evaluator(const Evaluator& other) = delete;
     Evaluator& operator=(const Evaluator& other) = delete;

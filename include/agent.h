@@ -24,6 +24,6 @@ public:
 	virtual ~Agent() = default;
 
 	virtual void startGame(const GameInfo& info) = 0;
-	virtual Move getAction(const GameInfo& info, uint32_t turn, ls::State& state) = 0;
+	virtual ls::Move getAction(const GameInfo& info, uint32_t turn, ls::State& state) = 0;
 	virtual void endGame(const GameInfo& info) = 0;
 };
