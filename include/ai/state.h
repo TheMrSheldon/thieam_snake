@@ -3,27 +3,29 @@
 #include <libsnake/move.h>
 #include <libsnake/state.h>
 #include <libsnake/gamemode.h>
-#include <libsnake/gamemodes/duel.h>
+#include <libsnake/gamemodes/arena.h>
 
 #include <iostream>
 #include <bitset>
+#include <vector>
 
 class State {
 	using LState = ls::State;
 public:
-	const ls::Gamemode<2>& gamemode = ls::gm::Duel;
-	ls::Move p1Move;
+	const ls::Gamemode& gamemode = ls::gm::Arena;
+	const std::vector<ls::Move> moves;
 	LState state;
 
 public:
-	State(LState state, ls::Move p1Move = 0) : state(state), p1Move(p1Move) {}
+	State(LState state) : state(state), moves() {}
+	State(LState state, std::vector<ls::Move>&& moves) : state(state), moves(moves) {}
 
 	int getTurn() const noexcept {
-		return (p1Move == 0)? 0: 1;
+		return moves.size();
 	}
 
 	ls::Move getValidActions() const noexcept {
-		ls::Move actions = ls::gm::Duel.getUnblockedActions(state, getTurn());
+		ls::Move actions = gamemode.getUnblockedActions(state, getTurn());
 		if (actions == ls::Move::none)
 			return ls::Move::up;
 		return actions;
@@ -34,8 +36,10 @@ public:
 	}
 
 	State afterMove(ls::Move action) const noexcept {
-		if (p1Move != 0)
-			return State(gamemode.stepState(state, {p1Move, action}));
-		return State(state, action);
+		std::vector<ls::Move> newMoves(moves.begin(), moves.end());
+		newMoves.emplace_back(action);
+		if (newMoves.size() == state.getSnakes().size())
+			return State(gamemode.stepState(state, newMoves));
+		return State(state, std::move(newMoves));
 	}
 };

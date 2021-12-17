@@ -1,6 +1,6 @@
 #include <ai/eval.h>
 
-#include <libsnake/gamemodes/duel.h>
+#include <libsnake/gamemodes/arena.h>
 
 #include <algorithm>
 #include <deque>
@@ -18,13 +18,14 @@
 Evaluator::Evaluator() noexcept : envbuffer(scan_area_width*scan_area_width) {}
 
 Evaluation Evaluator::evaluate(const ls::State& state) noexcept {
+	const ls::Gamemode& gamemode = ls::gm::Arena;
     Evaluation result;
-    result.winner = ls::gm::Duel.getWinner(state);
-    if (!ls::gm::Duel.isGameOver(state)) {
+    result.winner = gamemode.getWinner(state);
+    if (!gamemode.isGameOver(state)) {
         result.snakes[0].health = state.getSnake(0).getHealth();
         result.snakes[1].health = state.getSnake(1).getHealth();
-		result.snakes[0].choice = ls::gm::Duel.getUnblockedActions(state, 0).size();
-		result.snakes[1].choice = ls::gm::Duel.getUnblockedActions(state, 1).size();
+		result.snakes[0].choice = gamemode.getUnblockedActions(state, 0).size();
+		result.snakes[1].choice = gamemode.getUnblockedActions(state, 1).size();
         scanProximity(state, result);
     }
     return result;
@@ -62,12 +63,6 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
         if (isInEnvBuff(tail - snake2Pos + middle))
             getEnvBuffEntry(tail - snake2Pos + middle) |= 2;
     }
-    for (const auto&  food : state.getFood()) {
-        if (isInEnvBuff(food - snake1Pos + middle))
-            getEnvBuffEntry(food - snake1Pos + middle) |= 4;
-        if (isInEnvBuff(food - snake2Pos + middle))
-            getEnvBuffEntry(food - snake2Pos + middle) |= 8;
-    }
     // Additionally block the border of the bord of:
     for (uint32_t snake = 0; snake < 2; ++snake) {
         const uint8_t bit = 1<<snake;
@@ -90,7 +85,6 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
     // Scan the environment
     for (uint32_t snake = 0; snake < 2; ++snake) {
         const uint8_t bit = 0b1<<snake;
-        const uint8_t foodbit = 0b100<<snake;
         std::deque<PosStr> frontier = {PosStr{middle, scan_radius}};
         unsigned totalVisited = 0;
         unsigned foodReached = 0;
@@ -105,7 +99,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
                         envbuff |= bit;
                         frontier.push_back({cur.pos + dir, cur.dist_rem-1});
                         totalVisited++;
-                        foodReached += !!(envbuff&foodbit);
+                        foodReached += state.isFoodAt(cur.pos + dir);
                     }
                 }
             }

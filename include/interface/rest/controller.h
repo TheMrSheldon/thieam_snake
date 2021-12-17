@@ -87,7 +87,7 @@ namespace rest {
 				if (id == nullptr || *id != *(s->id))
 					snakes.emplace_back(FromDTO3(s->body), s->health);
 			}
-			return ls::State((unsigned)width.getValue(0), (unsigned)height.getValue(0), snakes, food);
+			return ls::State((unsigned)width.getValue(0), (unsigned)height.getValue(0), std::move(snakes), food);
 		}
 		static std::vector<ls::Position> FromDTO3(const oatpp::data::mapping::type::DTO::Vector<Object<rest::dto::Position>>& pos) {
 			std::vector<ls::Position> ret;

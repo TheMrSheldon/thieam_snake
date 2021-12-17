@@ -19,7 +19,11 @@ private:
 			return evaluator.evaluate(state);
 		for (const auto& action : state.getValidActions()) {
 			auto next = state.afterMove(action);
-			auto score = -minimax(next, depth-1, -beta, -alpha, evaluator);
+			float score;
+			if ((state.getTurn() == 0) != (next.getTurn() == 0))
+				score = -minimax(next, depth-1, -beta, -alpha, evaluator);
+			else
+				score = minimax(next, depth-1, alpha, beta, evaluator);
 			if (score > alpha) {
 				alpha = score;
 				if (alpha >= beta)
