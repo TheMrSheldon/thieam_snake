@@ -30,6 +30,8 @@ private:
 	const unsigned width;
 	const unsigned height;
 	std::vector<Entry> data;
+	std::vector<size_t> areaControl;
+	std::vector<size_t> borderControl;
 
 	EnvBuffer(const EnvBuffer& other) = delete;
 	EnvBuffer& operator=(const EnvBuffer& other) = delete;
@@ -43,10 +45,11 @@ private:
 		return data[pos.y*width+pos.x];
 	}
 public:
-	inline EnvBuffer(unsigned width, unsigned height) noexcept : width(width), height(height), data(width*height, Entry{}) {}
+	inline EnvBuffer(size_t numSnakes, unsigned width, unsigned height) noexcept : width(width), height(height),
+		data(width*height, Entry{}), areaControl(numSnakes, 0), borderControl(numSnakes, 0) {}
 	inline void storeSnake(size_t snakeIdx, const ls::Snake& snake) noexcept {
 		for (size_t bodyIdx = 0; bodyIdx < snake.length(); ++bodyIdx)
-			blockUntilTurn(snake.getBody()[bodyIdx], snakeIdx, snake.length()-bodyIdx);
+			blockUntilTurn(snake.getBody()[bodyIdx], snakeIdx, snake.length()-1-bodyIdx);
 	}
 	inline void clear() noexcept {
 		std::memset(data.data(), 0, data.size()*sizeof(decltype(data)::value_type));
@@ -61,12 +64,12 @@ public:
 		const auto& entry = getEntry(pos);
 		if (entry.snake == 0)
 			return false;
-		if (entry.timeBlocked < 0) {//Field is "Blocked Until"
+		if (entry.timeBlocked <= 0) {//Field is "Blocked Until"
 			return turn <= (-entry.timeBlocked);
 		} else {//Field is "Blocked after"
 			if ((entry.snake & ls::SnakeFlags::ByIndex(snake)) != ls::SnakeFlags::None) {//This snake already claimed the field
 				ASSERT(turn >= entry.timeBlocked, "TODO: Why?");
-				return false;
+				return true;
 			}
 			//If another snake wants to check if the field is blocked at this time but would reach the field
 			//at the same time as the snake who previously claimed it (turn == entry.timeBlocked) then this
@@ -80,6 +83,9 @@ public:
 			.timeBlocked = (int8_t)turn,
 			.snake = ls::SnakeFlags::ByIndex(snake)
 		};
+		//FIXME: count as border if two or more snakes access at the same time
+		ASSERT(snake < areaControl.size(), "Snake index out of range");
+		areaControl[snake]++;
 	}
 	inline void blockUntilTurn(const ls::Position& pos, size_t snake, size_t turn) noexcept {
 		ASSERT(turn <= 0b01111111, "TODO: Why?");
@@ -90,12 +96,12 @@ public:
 	}
 
 	inline size_t getAreaControl(size_t snake) const noexcept {
-		ASSERT(false, "Not yet implemented");
-		return 0;
+		ASSERT(snake < areaControl.size(), "Snake index out of range");
+		return areaControl[snake];
 	}
 	inline size_t getBorderControl(size_t snake) const noexcept {
-		ASSERT(false, "Not yet implemented");
-		return 0;
+		ASSERT(snake < borderControl.size(), "Snake index out of range");
+		return borderControl[snake];
 	}
 };
 
@@ -109,7 +115,7 @@ private:
 	Evaluator(const Evaluator& other) = delete;
 	Evaluator& operator=(const Evaluator& other) = delete;
 public:
-	Evaluator(const ls::Gamemode& gamemode, unsigned width, unsigned height) noexcept;
+	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept;
 
 	Evaluation evaluate(const ls::State& state) noexcept;
 

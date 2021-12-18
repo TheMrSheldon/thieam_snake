@@ -15,7 +15,7 @@ void Robin::startGame(const GameInfo& info) {
 }
 
 ls::Move Robin::getAction(const GameInfo& info, uint32_t turn, ls::State& state) {
-	Search<State, ls::Move, Evaluator> search({.initialDepth = 10});
+	Search<State, ls::Move, Evaluator> search({.initialDepth = 4});
 	return search.findBestMove(State(state));
 }
 

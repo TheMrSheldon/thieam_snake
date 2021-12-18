@@ -5,7 +5,8 @@
 #include <algorithm>
 #include <deque>
 
-Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned width, unsigned height) noexcept : gamemode(gamemode), envbuffer(width, height) {}
+Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept
+	: gamemode(gamemode), envbuffer(numSnakes, width, height) {}
 
 Evaluation Evaluator::evaluate(const ls::State& state) noexcept {
 	Evaluation result;
@@ -27,8 +28,8 @@ UNROLL
 void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexcept {
 	struct PosStr {
 		ls::Position pos;
-		unsigned dist;
 		size_t snake;
+		unsigned dist;
 	};
 	// Setup the envbuffer and frontier-queue
 	envbuffer.clear();

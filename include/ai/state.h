@@ -29,6 +29,9 @@ public:
 	unsigned getHeight() const noexcept {
 		return state.getHeight();
 	}
+	size_t getNumPlayers() const noexcept {
+		return state.getSnakes().size();
+	}
 
 	size_t getTurn() const noexcept {
 		return moves.size();

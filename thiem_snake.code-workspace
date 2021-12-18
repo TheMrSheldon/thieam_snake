@@ -19,6 +19,10 @@
 		"editor.insertSpaces": false,
 		"editor.detectIndentation": false,
 		/*Exclude these files in the Project-workspace */
-		"files.exclude": {"src": true, "include": true, "tests": true}
+		"files.exclude": {
+			"src": true,
+			"include": true,
+			"tests": true
+		}
 	}
 }

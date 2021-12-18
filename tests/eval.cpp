@@ -4,13 +4,13 @@
 
 #include <vector>
 
-TEST_CASE("State1", "[Envbuffer]") {
+TEST_CASE("Envbuffer State1", "[Envbuffer]") {
 	/**
 	 * ╔═══════════════════╗	Snake 1:	<11
 	 * ║ . . . . o . . 2 . ║	Snake 2:	<22
 	 * ║ . . . . . o . 2 . ║	Food:		o
 	 * ║ . 1 1 1 1 1 . 2 . ║	Empty:		.
-	 * ║ . . . . . 1 . ^ . ║
+	 * ║ . . . . . 1 . v . ║
 	 * ║ . o . < 1 1 . . . ║
 	 * ║ . . . . . . . . o ║
 	 * ╚═══════════════════╝
@@ -21,7 +21,7 @@ TEST_CASE("State1", "[Envbuffer]") {
 	auto s1 = ls::Snake(std::move(snake1), ls::Move::left, 82);
 	auto s2 = ls::Snake(std::move(snake2), ls::Move::down, 19);
 	auto state = ls::State(9,6, {s1, s2}, std::move(food));
-	EnvBuffer env(state.getWidth(), state.getHeight());
+	EnvBuffer env(state.getSnakes().size(), state.getWidth(), state.getHeight());
 
 	SECTION("Clearing") {
 		env.clear();
@@ -31,49 +31,120 @@ TEST_CASE("State1", "[Envbuffer]") {
 				CHECK_FALSE(env.isBlockedAtTurn(ls::Position(x,y), 1, 0));
 			}
 		}
-	}
-	SECTION("Blocking") {
-		
+	//}
+	//SECTION("Fields blocked by snakes") {
+		env.storeSnake(0, s1);
+		CHECK(env.isBlockedAtTurn(s1.getBody()[0], 0, 0));
+		//Last bodypart
+		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 0));
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 1));
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 2));
+		//Second last bodypart
+		CHECK(env.isBlockedAtTurn(s1.getBody()[7], 0, 0));
+		CHECK(env.isBlockedAtTurn(s1.getBody()[7], 0, 1));
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[7], 0, 2));
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[7], 0, 3));
+	//}
+	//SECTION("Storing blocked fields") {
+		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 0));
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 3));
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 4));
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 5));
+		//Overwrite the field initially blocked by the snakes tail
+		env.blockAfterTurn(s1.getBody()[8], 0, 4);
+		//This check should be illegal since snake 0 already claimed this field
+		//CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 3));
+		//This check should be illegal since snake 0 already claimed this field
+		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 4));
+		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 5));
+		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 6));
+		//This is a border-tile and thus part of the territory of snake 0 and snake 1
+		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 1, 4));
+		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 1, 5));
 	}
 }
-
-#if 0
-TEST_CASE("State1", "[Evaluation]") {
+TEST_CASE("Evaluate State1", "[Evaluation]") {
 	/**
 	 * ╔═══════════════════╗	Snake 1:	<11
 	 * ║ . . . . o . . 2 . ║	Snake 2:	<22
 	 * ║ . . . . . o . 2 . ║	Food:		o
 	 * ║ . 1 1 1 1 1 . 2 . ║	Empty:		.
-	 * ║ . . . . . 1 . ^ . ║
+	 * ║ . . . . . 1 . v . ║
 	 * ║ . o . < 1 1 . . . ║
 	 * ║ . . . . . . . . o ║
 	 * ╚═══════════════════╝
 	 */
-	std::vector<Position> snake1 = {{3,1},{4,1},{5,1},{5,2},{5,3},{4,3},{3,3},{2,3},{1,3}};
-	std::vector<Position> snake2 = {{7,2},{7,3},{7,4},{7,5}};
-	std::vector<Position> food = {{8,0},{1,1},{5,4},{4,5}};
-	auto sdata1 = SnakeData({snake1.data(), (uint32_t)snake1.size()}, MoveLeft, 82);
-	auto sdata2 = SnakeData({snake2.data(), (uint32_t)snake2.size()}, MoveDown, 19);
-	auto state = State(9,6, {sdata1, sdata2}, {food.data(), (uint32_t)food.size()});
+	std::vector<ls::Position> snake1 = {{3,1},{4,1},{5,1},{5,2},{5,3},{4,3},{3,3},{2,3},{1,3}};
+	std::vector<ls::Position> snake2 = {{7,2},{7,3},{7,4},{7,5}};
+	std::vector<ls::Position> food = {{8,0},{1,1},{5,4},{4,5}};
+	auto s1 = ls::Snake(std::move(snake1), ls::Move::left, 82);
+	auto s2 = ls::Snake(std::move(snake2), ls::Move::down, 19);
+	auto state = ls::State(9,6, {s1, s2}, std::move(food));
 	
 	//Assert correct evaluation
-	Evaluator evaluator;
+	Evaluator evaluator(ls::gm::Arena, state.getSnakes().size(), state.getWidth(), state.getHeight());
 	auto eval = evaluator.evaluate(state);
-	CHECK(eval.winner == Winner::None);
-	CHECK(eval.snakes[0].health == sdata1.health);
-	CHECK(eval.snakes[1].health == sdata2.health);
-	// Mobility:
-	// ╔═══════════════════╗ ╔═══════════════════╗ +: Mobility of 1
-	// ║ + + + + + + + . o ║ ║ . . . . . # # # # ║ #: Mobility of 2
-	// ║ + + + < 1 1 . . . ║ ║ . o . < 1 1 # # # ║
-	// ║ + + + + + 1 . ^ . ║ ║ . . . . . 1 # ^ # ║
-	// ║ . 1 1 1 1 1 . 2 . ║ ║ . 1 1 1 1 1 # 2 # ║
-	// ║ . . . . . o . 2 . ║ ║ . . . . . # # 2 # ║
-	// ║ . . . . o . . 2 . ║ ║ . . . . o . # 2 # ║
-	// ╚═══════════════════╝ ╚═══════════════════╝
-	CHECK(eval.snakes[0].mobility == 15);
-	CHECK(eval.snakes[1].mobility == 16);
+	CHECK(eval.winner == ls::SnakeFlags::None);
+	REQUIRE(eval.snakes.size() == 2);
+	CHECK(eval.snakes[0].health == s1.getHealth());
+	CHECK(eval.snakes[1].health == s2.getHealth());
+	
+	/* Board:
+	 * ╔═══════════════════╗	Snake 1:	<11
+	 * ║ . . . . o . . 2 . ║	Snake 2:	<22
+	 * ║ . . . . . o . 2 . ║	Food:		o
+	 * ║ . 1 1 1 1 1 . 2 . ║	Empty:		.
+	 * ║ . . . . . 1 . v . ║
+	 * ║ . o . < 1 1 . . . ║
+	 * ║ . . . . . . . . o ║
+	 * ╚═══════════════════╝
+	 * 
+	 * Iterations:
+	 * 0:                   	1:                   	2:
+	 * ╔═══════════════════╗	╔═══════════════════╗	╔═══════════════════╗
+	 * ║ . . . . o . . 1 . ║	║ . . . . o . . 1 . ║	║ . . . . o . . 1 . ║
+	 * ║ . . . . . o . 2 . ║	║ . . . . . o . 2 . ║	║ . . . . . o . 2 . ║
+	 * ║ . 1 2 3 4 5 . 3 . ║	║ . 1 2 3 4 5 . 3 . ║	║ . 1 2 3 4 5 ▒ 3 ▒ ║
+	 * ║ . . . . . 6 . 4 . ║	║ . . . ▓ . 6 ▒ 4 ▒ ║	║ . . ▓ █ ▓ 6 ░ 4 ░ ║
+	 * ║ . o . 9 8 7 . . . ║	║ . o ▓ 9 8 7 . ▒ . ║	║ . ▓ █ 9 8 7 ▒ ░ ▒ ║
+	 * ║ . . . . . . . . o ║	║ . . . ▓ . . . . o ║	║ . . ▓ █ ▓ . . ▒ o ║
+	 * ╚═══════════════════╝	╚═══════════════════╝	╚═══════════════════╝
+	 * 3:                   	4:                   	5:
+	 * ╔═══════════════════╗	╔═══════════════════╗	╔═══════════════════╗
+	 * ║ . . . . o . . 1 . ║	║ . . . . o . ▒ 1 ▒ ║	║ . . ▓ . o ▒ ░ ▒ ░ ║
+	 * ║ . . . . . o ▒ 2 ▒ ║	║ . . ▓ . . ▒ ░ ▒ ░ ║	║ . ▓ █ ▓ ▒ ░ ░ ░ ░ ║
+	 * ║ . 1 ▓ 3 4 5 ░ ▒ ░ ║	║ . ▓ █ ▓ 4 5 ░ ░ ░ ║	║ ▓ █ █ █ ▓ ▒ ░ ░ ░ ║
+	 * ║ . ▓ █ █ █ 6 ░ 4 ░ ║	║ ▓ █ █ █ █ 6 ░ ▒ ░ ║	║ █ █ █ █ █ 6 ░ ░ ░ ║
+	 * ║ ▓ █ █ 9 8 7 ░ ░ ░ ║	║ █ █ █ 9 8 7 ░ ░ ░ ║	║ █ █ █ 9 8 7 ░ ░ ░ ║
+	 * ║ . ▓ █ █ █ ▓ ▒ ░ ▒ ║	║ ▓ █ █ █ █ █ ░ ░ ░ ║	║ █ █ █ █ █ █ ░ ░ ░ ║
+	 * ╚═══════════════════╝	╚═══════════════════╝	╚═══════════════════╝
+	 * 6:                   	7:                   	8:
+	 * ╔═══════════════════╗	╔═══════════════════╗	╔═══════════════════╗
+	 * ║ . ▓ █ ▓ ▒ ░ ░ ░ ░ ║	║ ▓ █ █ █ ░ ░ ░ ░ ░ ║	║ █ █ █ █ ░ ░ ░ ░ ░ ║
+	 * ║ ▓ █ █ █ ░ ░ ░ ░ ░ ║	║ █ █ █ █ ░ ░ ░ ░ ░ ║	║ █ █ █ █ ░ ░ ░ ░ ░ ║
+	 * ║ █ █ █ █ █ ░ ░ ░ ░ ║	║ █ █ █ █ █ ░ ░ ░ ░ ║	║ █ █ █ █ █ ░ ░ ░ ░ ║
+	 * ║ █ █ █ █ █ ▒ ░ ░ ░ ║	║ █ █ █ █ █ ░ ░ ░ ░ ║	║ █ █ █ █ █ ░ ░ ░ ░ ║
+	 * ║ █ █ █ 9 8 7 ░ ░ ░ ║	║ █ █ █ 9 8 ▒ ░ ░ ░ ║	║ █ █ █ 9 ▒ ░ ░ ░ ░ ║
+	 * ║ █ █ █ █ █ █ ░ ░ ░ ║	║ █ █ █ █ █ █ ░ ░ ░ ║	║ █ █ █ █ █ █ ░ ░ ░ ║
+	 * ╚═══════════════════╝	╚═══════════════════╝	╚═══════════════════╝
+	 * 9:                   	10:
+	 * ╔═══════════════════╗	╔═══════════════════╗	▓:	Frontier Snake0
+	 * ║ █ █ █ █ ░ ░ ░ ░ ░ ║	║ █ █ █ █ ░ ░ ░ ░ ░ ║	▒:	Frontier Snake1
+	 * ║ █ █ █ █ ░ ░ ░ ░ ░ ║	║ █ █ █ █ ░ ░ ░ ░ ░ ║	█:	Control Snake0
+	 * ║ █ █ █ █ █ ░ ░ ░ ░ ║	║ █ █ █ █ █ ░ ░ ░ ░ ║	░:	Control Snake1
+	 * ║ █ █ █ █ █ ░ ░ ░ ░ ║	║ █ █ █ █ █ ░ ░ ░ ░ ║	X:	Fontier Border
+	 * ║ █ █ █ ▒ ░ ░ ░ ░ ░ ║	║ █ █ █ ░ ░ ░ ░ ░ ░ ║	x:	Control Border
+	 * ║ █ █ █ █ █ █ ░ ░ ░ ║	║ █ █ █ █ █ █ ░ ░ ░ ║
+	 * ╚═══════════════════╝	╚═══════════════════╝
+	 * 
+	 * Result:
+	 * 	Snake | Area control | Border control
+	 * 	=====================================
+	 * 	0    |           27 |             0
+	 * 	1    |           27 |             0
+	 */
+	CHECK(eval.snakes[0].mobility == 27);
+	CHECK(eval.snakes[1].mobility == 27);
 	CHECK(eval.snakes[0].foodInReach == 1);
-	CHECK(eval.snakes[1].foodInReach == 2);
+	CHECK(eval.snakes[1].foodInReach == 3);
 }
-#endif
