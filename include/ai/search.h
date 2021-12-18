@@ -36,7 +36,7 @@ private:
 public:
 	Search(SearchSettings settings = {}) noexcept : settings(settings) {}
 	Move findBestMove(const State& state) const {
-		Evaluator eval;
+		Evaluator eval(state.getGamemode(), state.getWidth(), state.getHeight());
 		float best_score = -std::numeric_limits<float>::infinity();
 		Move best;
 		for (const auto& action : state.getValidActions()) {

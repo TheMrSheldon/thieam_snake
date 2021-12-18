@@ -8,40 +8,32 @@
 
 using namespace rest;
 
-void myBackendLogicDummy() {
-	while (true) {
-		OATPP_LOGI("MyBackend", "Press enter to continue the loop, Strg+C to force unclean stop");
-		std::cin.ignore();
-	}
-}
-
 void run() {
-	std::thread oatppThread([] {
-		/* Register Components in scope of thread method */
+	oatpp::network::Server* server_ptr;
+	std::thread oatppThread([&server_ptr] {
 		AppComponent components;
-		/* Get router component */
 		OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
-		/* Get connection handler component */
 		OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
-		/* Get connection provider component */
 		OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, connectionProvider);
 
-		/* Create MyController and add all of its endpoints to router */
 		agents::Robin robin;
 		auto controller = std::make_shared<rest::Controller>(robin);
 		router->addController(controller);
 
-		/* Create server which takes provided TCP connections and passes them to HTTP connection handler */
 		oatpp::network::Server server(connectionProvider, connectionHandler);
-		/* Print info about server port */
-		OATPP_LOGI("MyApp", "Server running on port %s", connectionProvider->getProperty("port").getData());
-
-		/* Run server */
+		std::cout << "Server is now listening on port " << (char*)connectionProvider->getProperty("port").getData() << std::endl;
+		
+		server_ptr = &server;
 		server.run();
 	});
 
-	/* ToDo: Call your logic here! We are just calling some blocking dummy logic here */
-	myBackendLogicDummy();
+	while (true) {
+		std::cout << "[This is were a backend could be added]" << std::endl;
+		std::cin.ignore();
+	}
+
+	server_ptr->stop();
+	oatppThread.join();
 }
 
 int main(int argc, const char* argv[]) {

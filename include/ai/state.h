@@ -20,7 +20,17 @@ public:
 	State(LState state) : state(state), moves() {}
 	State(LState state, std::vector<ls::Move>&& moves) : state(state), moves(moves) {}
 
-	int getTurn() const noexcept {
+	const ls::Gamemode& getGamemode() const noexcept {
+		return gamemode;
+	}
+	unsigned getWidth() const noexcept {
+		return state.getWidth();
+	}
+	unsigned getHeight() const noexcept {
+		return state.getHeight();
+	}
+
+	size_t getTurn() const noexcept {
 		return moves.size();
 	}
 

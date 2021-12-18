@@ -6,7 +6,9 @@ include(FetchContent)
 include(CTest)
 enable_testing()
 
-add_executable(thieam_snake src/main.cpp src/agents/robin.cpp src/ai/eval.cpp)
+set(THIEAM_SOURCE_FILES "src/agents/robin.cpp" "src/ai/eval.cpp")
+
+add_executable(thieam_snake "src/main.cpp" ${THIEAM_SOURCE_FILES})
 target_compile_features(thieam_snake PRIVATE cxx_std_20)
 
 include_directories(PUBLIC include)
@@ -32,6 +34,7 @@ FetchContent_GetProperties(libsnake_lib)
 target_include_directories(thieam_snake PRIVATE ${libsnake_SOURCE_DIR}/include/)
 target_link_libraries(thieam_snake PRIVATE libsnake)
 
+set(OATPP_BUILD_TESTS OFF) #We do not want oatpp to run their tests in our project
 FetchContent_Declare(
 	oatpp_lib
 	GIT_REPOSITORY https://github.com/oatpp/oatpp.git
