@@ -35,6 +35,7 @@ target_include_directories(thieam_snake PRIVATE ${libsnake_SOURCE_DIR}/include/)
 target_link_libraries(thieam_snake PRIVATE libsnake)
 
 set(OATPP_BUILD_TESTS OFF) #We do not want oatpp to run their tests in our project
+option(OATPP_BUILD_TESTS OFF)
 FetchContent_Declare(
 	oatpp_lib
 	GIT_REPOSITORY https://github.com/oatpp/oatpp.git
