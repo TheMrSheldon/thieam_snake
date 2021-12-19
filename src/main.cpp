@@ -1,5 +1,6 @@
 #include "interface/rest/controller.h"
 #include "interface/rest/AppComponent.h"
+#include "interface/cli_controller.h"
 #include "agents/robin.h"
 
 #include <oatpp/network/Server.hpp>
@@ -21,16 +22,14 @@ void run() {
 		router->addController(controller);
 
 		oatpp::network::Server server(connectionProvider, connectionHandler);
-		std::cout << "Server is now listening on port " << (char*)connectionProvider->getProperty("port").getData() << std::endl;
+		//std::cout << "Server is now listening on port " << (char*)connectionProvider->getProperty("port").getData() << std::endl;
 		
 		server_ptr = &server;
 		server.run();
 	});
 
-	while (true) {
-		std::cout << "[This is were a backend could be added]" << std::endl;
-		std::cin.ignore();
-	}
+	CLIController controller;
+	controller.Run();
 
 	server_ptr->stop();
 	oatppThread.join();

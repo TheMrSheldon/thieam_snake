@@ -6,6 +6,7 @@
 				"${workspaceFolder}/include/**",
 				"${workspaceFolder}/build/_deps/libsnake_lib-src/include/",
 				"${workspaceFolder}/build/_deps/oatpp_lib-src/src/",
+				"${workspaceFolder}/build/_deps/cli_lib-src/include/",
 				"${workspaceFolder}/include"
 			],
 			"defines": [],
@@ -20,6 +21,7 @@
 				"${workspaceFolder}/include/**",
 				"${workspaceFolder}/build/_deps/libsnake_lib-src/include/",
 				"${workspaceFolder}/build/_deps/oatpp_lib-src/src/",
+				"${workspaceFolder}/build/_deps/cli_lib-src/include/",
 				"${workspaceFolder}/include"
 			],
 			"defines": [],

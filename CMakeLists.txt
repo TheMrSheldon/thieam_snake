@@ -6,7 +6,7 @@ include(FetchContent)
 include(CTest)
 enable_testing()
 
-set(THIEAM_SOURCE_FILES "src/agents/robin.cpp" "src/ai/eval.cpp")
+set(THIEAM_SOURCE_FILES "src/agents/robin.cpp" "src/ai/eval.cpp" "src/interface/cli_controller.cpp")
 
 add_executable(thieam_snake "src/main.cpp" ${THIEAM_SOURCE_FILES})
 target_compile_features(thieam_snake PRIVATE cxx_std_20)
@@ -46,6 +46,14 @@ FetchContent_GetProperties(oatpp_lib)
 target_include_directories(thieam_snake PRIVATE ${oatpp_lib_SOURCE_DIR}/src/)
 target_link_libraries(thieam_snake PRIVATE oatpp)
 
+FetchContent_Declare(
+	cli_lib
+	GIT_REPOSITORY https://github.com/daniele77/cli.git
+	GIT_TAG v2.0.0
+)
+FetchContent_MakeAvailable(cli_lib)
+FetchContent_GetProperties(cli_lib)
+target_include_directories(thieam_snake PRIVATE ${cli_lib_SOURCE_DIR}/include/)
 
 ##########################################################################################
 # Testing
