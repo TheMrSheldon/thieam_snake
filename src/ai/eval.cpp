@@ -38,6 +38,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 	for (size_t snake = 0; snake < state.getSnakes().size(); ++snake) {
 		if (!state.getSnake(snake).isDead()) {
 			envbuffer.storeSnake(snake, state.getSnake(snake));
+			envbuffer.blockAfterTurn(state.getSnake(snake).getHeadPos(), snake, 0);
 			frontier.emplace_back(state.getSnake(snake).getHeadPos(), snake, 0);
 		}
 	}

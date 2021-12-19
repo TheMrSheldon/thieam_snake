@@ -1,11 +1,11 @@
 {
 	"folders": [
 		{
-			"name": "Sources",
-			"path": "src"
-		}, {
 			"name": "Include",
 			"path": "include"
+		}, {
+			"name": "Sources",
+			"path": "src"
 		}, {
 			"name": "Tests",
 			"path": "tests"

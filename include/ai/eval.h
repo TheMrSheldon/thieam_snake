@@ -24,7 +24,10 @@ struct Evaluation final {
 class EnvBuffer final {
 private:
 	struct Entry {
-		int8_t timeBlocked;
+		struct {
+			bool until : 1;
+			uint8_t turn : 7;
+		} timeBlocked;
 		ls::SnakeFlags snake;
 	};
 	const unsigned width;
@@ -62,35 +65,44 @@ public:
 		if (!isInbounds(pos))
 			return true;
 		const auto& entry = getEntry(pos);
-		if (entry.snake == 0)
+		if (entry.snake == ls::SnakeFlags::None)
 			return false;
-		if (entry.timeBlocked <= 0) {//Field is "Blocked Until"
-			return turn <= (-entry.timeBlocked);
+		if (entry.timeBlocked.until) {//Field is "Blocked Until"
+			return turn <= entry.timeBlocked.turn;
 		} else {//Field is "Blocked after"
 			if ((entry.snake & ls::SnakeFlags::ByIndex(snake)) != ls::SnakeFlags::None) {//This snake already claimed the field
-				ASSERT(turn >= entry.timeBlocked, "TODO: Why?");
+				ASSERT(turn >= entry.timeBlocked.turn, "TODO: Why?");
 				return true;
 			}
 			//If another snake wants to check if the field is blocked at this time but would reach the field
 			//at the same time as the snake who previously claimed it (turn == entry.timeBlocked) then this
 			//is a border-tile and thus is counted as "unblocked" for both snakes.
-			return turn > entry.timeBlocked;
+			return turn > entry.timeBlocked.turn;
 		}
 	}
 	inline void blockAfterTurn(const ls::Position& pos, size_t snake, size_t turn) noexcept {
 		ASSERT(turn <= 0b01111111, "TODO: Why?");
-		getEntry(pos) = {
-			.timeBlocked = (int8_t)turn,
-			.snake = ls::SnakeFlags::ByIndex(snake)
-		};
-		//FIXME: count as border if two or more snakes access at the same time
 		ASSERT(snake < areaControl.size(), "Snake index out of range");
-		areaControl[snake]++;
+		ASSERT(snake < borderControl.size(), "Snake index out of range");
+		auto& entry = getEntry(pos);
+		if (entry.timeBlocked.turn != turn) {
+			entry.timeBlocked = {.until=false, .turn=(uint8_t)turn};
+			entry.snake = ls::SnakeFlags::ByIndex(snake);
+			areaControl[snake]++;
+		} else { // A snake already blocked this field
+			if (entry.snake.size() == 1) {//only one snake previously visited
+				const auto snakeIdx = entry.snake.getIndex();
+				areaControl[snakeIdx]--;
+				borderControl[snakeIdx]++;
+			}
+			entry.snake |= ls::SnakeFlags::ByIndex(snake);
+			borderControl[snake]++;
+		}
 	}
 	inline void blockUntilTurn(const ls::Position& pos, size_t snake, size_t turn) noexcept {
 		ASSERT(turn <= 0b01111111, "TODO: Why?");
 		getEntry(pos) = {
-			.timeBlocked = -(int8_t)turn,
+			.timeBlocked = {.until=true, .turn=(uint8_t)turn},
 			.snake = ls::SnakeFlags::ByIndex(snake)
 		};
 	}
