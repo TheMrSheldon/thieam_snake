@@ -48,8 +48,7 @@ target_link_libraries(thieam_snake PRIVATE oatpp)
 
 FetchContent_Declare(
 	cli_lib
-	GIT_REPOSITORY https://github.com/daniele77/cli.git
-	GIT_TAG v2.0.0
+	GIT_REPOSITORY https://github.com/TheMrSheldon/cli.git
 )
 FetchContent_MakeAvailable(cli_lib)
 FetchContent_GetProperties(cli_lib)

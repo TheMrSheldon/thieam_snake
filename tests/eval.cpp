@@ -86,8 +86,6 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	auto eval = evaluator.evaluate(state);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
-	CHECK(eval.snakes[0].health == s1.getHealth());
-	CHECK(eval.snakes[1].health == s2.getHealth());
 	
 	/* Board:
 	 * ╔═══════════════════╗	Snake 1:	<11
@@ -145,6 +143,8 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	 */
 	CHECK(eval.snakes[0].mobility == 27);
 	CHECK(eval.snakes[1].mobility == 27);
+	CHECK(eval.snakes[0].border == 0);
+	CHECK(eval.snakes[1].border == 0);
 	CHECK(eval.snakes[0].foodInReach == 1);
 	CHECK(eval.snakes[1].foodInReach == 3);
 }
@@ -178,8 +178,6 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	auto eval = evaluator.evaluate(state);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
-	CHECK(eval.snakes[0].health == s1.getHealth());
-	CHECK(eval.snakes[1].health == s2.getHealth());
 	/** Board
 	 * ╔═════════╗	Snake 1:	<11
 	 * ║ . . . . ║	Snake 2:	<22
@@ -205,6 +203,8 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	 */
 	CHECK(eval.snakes[0].mobility == 3);
 	CHECK(eval.snakes[1].mobility == 8);
+	CHECK(eval.snakes[0].border == 5);
+	CHECK(eval.snakes[1].border == 5);
 	CHECK(eval.snakes[0].foodInReach == 0);
 	CHECK(eval.snakes[1].foodInReach == 0);
 }
@@ -237,8 +237,6 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	auto eval = evaluator.evaluate(state);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
-	CHECK(eval.snakes[0].health == s1.getHealth());
-	CHECK(eval.snakes[1].health == s2.getHealth());
 	/** Board
 	 * ╔═════════╗	Snake 1:	<11
 	 * ║ . . . . ║	Snake 2:	<22
@@ -271,6 +269,8 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	 */
 	CHECK(eval.snakes[0].mobility == 2);
 	CHECK(eval.snakes[1].mobility == 12);
+	CHECK(eval.snakes[0].border == 2);
+	CHECK(eval.snakes[1].border == 2);
 	CHECK(eval.snakes[0].foodInReach == 0);
 	CHECK(eval.snakes[1].foodInReach == 0);
 }

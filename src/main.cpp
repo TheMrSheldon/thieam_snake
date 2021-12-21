@@ -30,7 +30,7 @@ void run() {
 
 	CLIController controller;
 	controller.Run();
-
+	
 	server_ptr->stop();
 	oatppThread.join();
 }

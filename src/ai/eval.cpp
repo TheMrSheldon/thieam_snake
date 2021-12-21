@@ -15,7 +15,6 @@ Evaluation Evaluator::evaluate(const ls::State& state) noexcept {
 		result.snakes = std::vector<SnakeEval>();
 		for (size_t snake = 0; snake < state.getSnakes().size(); ++snake) {
 			result.snakes.emplace_back(SnakeEval{
-				.health = (unsigned)state.getSnake(snake).getHealth(),
 				.choice = gamemode.getUnblockedActions(state, 0).size()
 			});
 		}
@@ -58,6 +57,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 	// Store the results in the Evaluation-datastructur
 	for (size_t snake = 0; snake < state.getSnakes().size(); ++snake) {
 		results.snakes[snake].mobility = (unsigned)envbuffer.getAreaControl(snake);
+		results.snakes[snake].mobility = (unsigned)envbuffer.getBorderControl(snake);
 		results.snakes[snake].mobility_per_area = envbuffer.getAreaControl(snake)/(float)(state.getWidth()*state.getHeight());
 		results.snakes[snake].foodInReach = (unsigned)foodReached[snake];
 	}
@@ -78,7 +78,7 @@ float Evaluator::evaluate(const State& state) noexcept {
 			return 100;
 		return -100;
 	}
-	return .2f*relEval((float)eval.snakes[0].health, (float)eval.snakes[1].health)
+	return .2f*relEval((float)state.state.getSnake(0).getHealth(), (float)state.state.getSnake(1).getHealth())
 		+ 5*relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility)
 		+ .05f*relEval((float)eval.snakes[0].foodInReach, (float)eval.snakes[1].foodInReach)
 		+ 3*relEval((float)eval.snakes[0].choice, (float)eval.snakes[1].choice);

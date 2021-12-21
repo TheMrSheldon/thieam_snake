@@ -10,8 +10,8 @@
 
 struct SnakeEval final {
 	unsigned mobility;
+	unsigned border;
 	float mobility_per_area;
-	unsigned health;
 	unsigned foodInReach;
 	unsigned choice;
 };
