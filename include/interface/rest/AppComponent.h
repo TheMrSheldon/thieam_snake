@@ -15,6 +15,8 @@ namespace rest {
 		/** Create ConnectionProvider component which listens on the port */
 		OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, serverConnectionProvider)([] {
 			return oatpp::network::tcp::server::ConnectionProvider::createShared({"0.0.0.0", 8003, oatpp::network::Address::IP_4});
+			//For IPv6
+			//return oatpp::network::tcp::server::ConnectionProvider::createShared({"::", 8003, oatpp::network::Address::IP_6});
 		}());
 		
 		/** Create Router component */

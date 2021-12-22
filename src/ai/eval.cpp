@@ -88,10 +88,10 @@ float Evaluator::evaluate(const State& state) noexcept {
 	constexpr auto LengthThreshold = 5;
 	constexpr auto InitialFoodReward = 4;	//Feeding the first piece of food in endgame mode awards 2^-6 times this value's points
 	constexpr auto FoodRewardDecay = 2;
-	if(our_length < LengthThreshold) {
+	if(our_length < LengthThreshold){
 		return our_length - LengthThreshold - InitialFoodReward;	//Make sure that this returns at most the minimum endgameevaluation value
 	} else {
-		auto length_penalty = FoodRewardDecay * InitialFoodReward * std::powf(v, -our_length);
+		auto length_penalty = FoodRewardDecay * InitialFoodReward * std::powf(FoodRewardDecay, -our_length);
 		return relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility) - length_penalty;
 	}
 }
