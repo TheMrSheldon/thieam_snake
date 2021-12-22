@@ -39,11 +39,7 @@ private:
 	EnvBuffer(const EnvBuffer& other) = delete;
 	EnvBuffer& operator=(const EnvBuffer& other) = delete;
 
-	const Entry& getEntry(const ls::Position& pos) const noexcept {
-		ASSERT(isInbounds(pos), "Position is out of bounds.");
-		return data[pos.y*width+pos.x];
-	}
-	Entry& getEntry(const ls::Position& pos) noexcept {
+	inline Entry& getEntry(const ls::Position& pos) noexcept {
 		ASSERT(isInbounds(pos), "Position is out of bounds.");
 		return data[pos.y*width+pos.x];
 	}
@@ -60,7 +56,13 @@ public:
 	inline bool isInbounds(const ls::Position& pos) const noexcept {
 		return pos.x >= 0 && pos.y >= 0 && pos.x < width && pos.y < height;
 	}
-	inline bool isBlockedAtTurn(const ls::Position& pos, size_t snake, size_t turn) const noexcept {
+	inline unsigned getWidth() const noexcept { return width; }
+	inline unsigned getHeight() const noexcept { return height; }
+	inline const Entry& getEntry(const ls::Position& pos) const noexcept {
+		ASSERT(isInbounds(pos), "Position is out of bounds.");
+		return data[pos.y*width+pos.x];
+	}
+	inline bool isBlockedAtTurn(const ls::State& state, const ls::Position& pos, size_t snake, size_t turn) const noexcept {
 		ASSERT(turn <= 0b01111111, "TODO: Why?");
 		if (!isInbounds(pos))
 			return true;
@@ -77,7 +79,8 @@ public:
 			//If another snake wants to check if the field is blocked at this time but would reach the field
 			//at the same time as the snake who previously claimed it (turn == entry.timeBlocked) then this
 			//is a border-tile and thus is counted as "unblocked" for both snakes.
-			return turn > entry.timeBlocked.turn;
+			return turn > entry.timeBlocked.turn || state.getSnake(entry.snake.getIndex()).length() > state.getSnake(snake).length();
+			//FIXME: entry.snake.getIndex() may throw an error if more than two snakes could occupy the field
 		}
 	}
 	inline void blockAfterTurn(const ls::Position& pos, size_t snake, size_t turn) noexcept {
@@ -129,7 +132,8 @@ private:
 public:
 	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept;
 
-	Evaluation evaluate(const ls::State& state) noexcept;
+	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }
 
+	Evaluation evaluate(const ls::State& state) noexcept;
 	float evaluate(const State& state) noexcept;
 };

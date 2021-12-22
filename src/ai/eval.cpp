@@ -47,7 +47,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 		frontier.pop_front();
 		for (const auto dir : {ls::Position(-1,0), ls::Position(1,0), ls::Position(0,-1), ls::Position(0,1)}) {
 			auto pos = cur.pos + dir;
-			if (!envbuffer.isBlockedAtTurn(pos, cur.snake, cur.dist+1)) {
+			if (!envbuffer.isBlockedAtTurn(state, pos, cur.snake, cur.dist+1)) {
 				envbuffer.blockAfterTurn(pos, cur.snake, cur.dist+1);
 				frontier.emplace_back(pos, cur.snake, cur.dist+1);
 				foodReached[cur.snake] += state.isFoodAt(pos);
@@ -57,7 +57,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 	// Store the results in the Evaluation-datastructur
 	for (size_t snake = 0; snake < state.getSnakes().size(); ++snake) {
 		results.snakes[snake].mobility = (unsigned)envbuffer.getAreaControl(snake);
-		results.snakes[snake].mobility = (unsigned)envbuffer.getBorderControl(snake);
+		//results.snakes[snake].bordercontrol = (unsigned)envbuffer.getBorderControl(snake);
 		results.snakes[snake].mobility_per_area = envbuffer.getAreaControl(snake)/(float)(state.getWidth()*state.getHeight());
 		results.snakes[snake].foodInReach = (unsigned)foodReached[snake];
 	}

@@ -11,6 +11,19 @@
 #include <functional>
 #include <vector>
 
+static const rang::fg SnakeColors[] = {
+	rang::fg::blue, rang::fg::green, rang::fg::magenta, rang::fg::yellow,
+	rang::fg::cyan, rang::fg::red, rang::fg::gray
+};
+
+static constexpr auto PrevLineCR = "\u001B[A\r";
+static constexpr auto ClearLine = "\33[2K\r";
+
+static inline void ClearLastLines(std::ostream& os, size_t num) {
+	for (size_t i = 0; i < num; i++)
+		os << PrevLineCR << ClearLine;
+}
+
 static std::pair<cli::detail::KeyType, char> GetKey() {
 	int c = _getch();
 	switch (c) {
@@ -76,9 +89,7 @@ static void _PlaceFood(std::ostream& out, unsigned width, unsigned height, ls::F
 		_PrintBoard(out, width, height, selected, food, snakes);
 		auto in = GetKey();
 		if (in.first == cli::detail::KeyType::eof) {
-			for (unsigned y = 0; y < height+2; y++)
-				out << "\u001B[A\r" << std::string(width*2+3, ' ');
-			out << "\u001B[A";
+			ClearLastLines(out, height+3);
 			return;
 		} else if (in.first == cli::detail::KeyType::up) {
 			selected = selected.after_move(ls::Move::up);
@@ -92,9 +103,7 @@ static void _PlaceFood(std::ostream& out, unsigned width, unsigned height, ls::F
 			food.set(selected, !food.get(selected.x, selected.y));
 		}
 		selected = selected.clamp({0,0}, {(int)width-1, (int)height-1});
-		for (unsigned y = 0; y < height+2; y++)
-			out << "\u001B[A\r" << std::string(width*2+3, ' ');
-		out << "\u001B[A";
+		ClearLastLines(out, height+3);
 	}
 }
 
@@ -106,9 +115,7 @@ static void _PlaceSnake(std::ostream& out, unsigned width, unsigned height, unsi
 		_PrintBoard(out, width, height, selected, food, snakes);
 		auto in = GetKey();
 		if (in.first == cli::detail::KeyType::eof) {
-			for (unsigned y = 0; y < height+2; y++)
-				out << "\u001B[A\r" << std::string(width*2+3, ' ');
-			out << "\u001B[A";
+			ClearLastLines(out, height+3);
 			return;
 		} else if (in.first == cli::detail::KeyType::up) {
 			selected = selected.after_move(ls::Move::up);
@@ -122,22 +129,17 @@ static void _PlaceSnake(std::ostream& out, unsigned width, unsigned height, unsi
 			snakes[snake].push_back(selected);
 			break;
 		}
-		for (unsigned y = 0; y < height+2; y++)
-			out << "\u001B[A\r" << std::string(width*2+3, ' ');
-		out << "\u001B[A";
+		selected = selected.clamp({0,0}, {(int)width-1, (int)height-1});
+		ClearLastLines(out, height+3);
 	}
-	for (unsigned y = 0; y < height+2; y++)
-		out << "\u001B[A\r";
-	out << "\u001B[A";
+	ClearLastLines(out, height+3);
 	//Place Body using arrow-keys
 	while(true) {
 		std::cout << rang::style::bold << '['<<(char)0x10<<(char)0x11<<(char)0x1E<<(char)0x1F<<"] to place the body; [ESC] to exit placement" << rang::style::reset << std::endl;
 		_PrintBoard(out, width, height, selected, food, snakes);
 		auto in = GetKey();
 		if (in.first == cli::detail::KeyType::eof) {
-			for (unsigned y = 0; y < height+2; y++)
-				out << "\u001B[A\r" << std::string(width*2+3, ' ');
-			out << "\u001B[A";
+			ClearLastLines(out, height+3);
 			return;
 		} else if (in.first == cli::detail::KeyType::up) {
 			selected = selected.after_move(ls::Move::up);
@@ -152,9 +154,7 @@ static void _PlaceSnake(std::ostream& out, unsigned width, unsigned height, unsi
 			selected = selected.after_move(ls::Move::right);
 			snakes[snake].push_back(selected);
 		}
-		for (unsigned y = 0; y < height+2; y++)
-			out << "\u001B[A\r" << std::string(width*2+3, ' ');
-		out << "\u001B[A";
+		ClearLastLines(out, height+3);
 	}
 }
 
@@ -176,7 +176,7 @@ static ls::State _InputGameState(std::ostream& out) {
 
 	std::vector<ls::Snake> sd;
 	for (auto& body : snakes) {
-		std::reverse(body.begin(), body.end());
+		//std::reverse(body.begin(), body.end());
 		sd.emplace_back(std::move(body), 100);
 	}
 	return ls::State(width, height, std::move(sd), std::move(food));
@@ -193,6 +193,22 @@ static void EvalCmd(std::ostream& out) {
 		out << "Snake Eval:\n"
 			<< "\tMobility: " << se.mobility << '\n';
 	}
+	out << "Env'buffer:\n";
+	const auto& env = eval.getEnvBuffer();
+	ls::State::drawBoard(out, env.getWidth(), env.getHeight(), [&out, &env](const ls::Position& pos){
+		const auto& entry = env.getEntry(pos);
+		if (entry.snake.size() == 1) {
+			ASSERT(entry.snake.getIndex() < sizeof(SnakeColors)/sizeof(SnakeColors[0]), "Too many snakes for our colors to handle");
+			out << SnakeColors[entry.snake.getIndex()];
+			if (entry.timeBlocked.until)
+				out << rang::bg::red;
+			out << (unsigned)entry.timeBlocked.turn
+				<< rang::style::reset;
+		} else {
+			out << '#';
+		}
+		return "";
+	});
 	out << std::flush;
 }
 
