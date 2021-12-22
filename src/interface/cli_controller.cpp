@@ -10,6 +10,7 @@
 #include <libsnake/state.h>
 #include <functional>
 #include <vector>
+#include <iomanip>
 
 static const rang::fg SnakeColors[] = {
 	rang::fg::blue, rang::fg::green, rang::fg::magenta, rang::fg::yellow,
@@ -161,17 +162,20 @@ static void _PlaceSnake(std::ostream& out, unsigned width, unsigned height, unsi
 static ls::State _InputGameState(std::ostream& out) {
 	unsigned width;
 	unsigned height;
+	unsigned numSnakes;
 
 	out << "Please input the dimensions of the board" << std::endl;
 	out << "Width: " << std::flush;
 	std::cin >> width;
 	out << "Height: " << std::flush;
 	std::cin >> height;
+	out << "#Snakes: " << std::flush;
+	std::cin >> numSnakes;
 	ls::Position selected(0,0);
 	ls::Foods food(width, height);
-	std::vector<std::vector<ls::Position>> snakes(2, std::vector<ls::Position>());
+	std::vector<std::vector<ls::Position>> snakes(numSnakes, std::vector<ls::Position>());
 	_PlaceFood(out, width, height, food, snakes);
-	for (unsigned i = 0; i < 2; i++)
+	for (unsigned i = 0; i < numSnakes; i++)
 		_PlaceSnake(out, width, height, i, food, snakes);
 
 	std::vector<ls::Snake> sd;
@@ -199,16 +203,16 @@ static void EvalCmd(std::ostream& out) {
 		const auto& entry = env.getEntry(pos);
 		if (entry.snake.size() == 1) {
 			ASSERT(entry.snake.getIndex() < sizeof(SnakeColors)/sizeof(SnakeColors[0]), "Too many snakes for our colors to handle");
-			out << SnakeColors[entry.snake.getIndex()];
+			out <<  SnakeColors[entry.snake.getIndex()];
 			if (entry.timeBlocked.until)
 				out << rang::bg::red;
-			out << (unsigned)entry.timeBlocked.turn
+			out << std::right << std::setw(2) << (unsigned)entry.timeBlocked.turn
 				<< rang::style::reset;
 		} else {
 			out << '#';
 		}
 		return "";
-	});
+	}, 2);
 	out << std::flush;
 }
 
