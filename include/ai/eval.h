@@ -4,6 +4,7 @@
 #include <libsnake/snake_flags.h>
 
 #include "state.h"
+#include "search.h"
 
 #include <inttypes.h>
 #include <vector>
@@ -134,6 +135,6 @@ public:
 
 	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }
 
-	Evaluation evaluate(const ls::State& state) noexcept;
-	float evaluate(const State& state) noexcept;
+	Evaluation evaluate(const ls::State& state, unsigned depth, const StateOfMind mindState) noexcept;
+	float evaluate(const State& state, unsigned depth, const StateOfMind mindState) noexcept;
 };
