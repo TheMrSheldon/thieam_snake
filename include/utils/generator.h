@@ -32,7 +32,13 @@ struct Generator {
 	handle_type h_;
 
 	Generator(handle_type h) : h_(h) {}
-	~Generator() { h_.destroy(); }
+	Generator(Generator<T>&& other) : h_(std::move(other.h_)) {
+		other.h_ = nullptr;
+	}
+	~Generator() {
+		if (h_)
+			h_.destroy();
+	}
 	explicit operator bool() {
 		return !h_.done();
 	}
@@ -44,6 +50,9 @@ struct Generator {
 
 private:
 	bool full_ = false;
+	
+	Generator(const Generator<T>& other) = delete;
+	Generator& operator=(const Generator& other) = delete;
 
 	void fill() {
 		if (!full_) {
