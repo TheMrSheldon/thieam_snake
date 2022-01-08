@@ -58,8 +58,8 @@ TEST_CASE("Envbuffer State1", "[Envbuffer]") {
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 4));
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 5));
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 6));
-		//This is a border-tile and thus part of the territory of snake 0 and snake 1
-		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 4));
+		//This is a border-tile and thus part of the territory of snake 0 since it is longer
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 4));
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 5));
 	}
 }
@@ -200,11 +200,12 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	 * 	=====================================
 	 * 	0    |             3 |             5
 	 * 	1    |             8 |             5
+	 *  Since snake 1 is longer all border control should be added to its area control
 	 */
-	CHECK(eval.snakes[0].mobility == 3);
+	CHECK(eval.snakes[0].mobility == 8);
 	CHECK(eval.snakes[1].mobility == 8);
-	CHECK(eval.snakes[0].border == 5);
-	CHECK(eval.snakes[1].border == 5);
+	CHECK(eval.snakes[0].border == 0);
+	CHECK(eval.snakes[1].border == 0);
 	CHECK(eval.snakes[0].foodInReach == 0);
 	CHECK(eval.snakes[1].foodInReach == 0);
 }
@@ -266,11 +267,12 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	 * 	=====================================
 	 * 	0    |             2 |             2
 	 * 	1    |            12 |             2
+	 *  Since snake 1 is longer all border control should be added to its area control
 	 */
-	CHECK(eval.snakes[0].mobility == 2);
+	CHECK(eval.snakes[0].mobility == 4);
 	CHECK(eval.snakes[1].mobility == 12);
-	CHECK(eval.snakes[0].border == 2);
-	CHECK(eval.snakes[1].border == 2);
+	CHECK(eval.snakes[0].border == 0);
+	CHECK(eval.snakes[1].border == 0);
 	CHECK(eval.snakes[0].foodInReach == 0);
 	CHECK(eval.snakes[1].foodInReach == 0);
 }
