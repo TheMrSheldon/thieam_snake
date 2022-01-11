@@ -11,14 +11,15 @@
 
 class State {
 	using LState = ls::State;
+	using LGamemode = ls::Gamemode;
 public:
-	const ls::Gamemode& gamemode = ls::gm::Arena;
+	const LGamemode& gamemode;
 	const std::vector<ls::Move> moves;
 	LState state;
 
 public:
-	State(LState state) : state(state), moves() {}
-	State(LState state, std::vector<ls::Move>&& moves) : state(state), moves(moves) {}
+	State(const LGamemode& gamemode, LState state) : gamemode(gamemode), state(state), moves() {}
+	State(const LGamemode& gamemode, LState state, std::vector<ls::Move>&& moves) : gamemode(gamemode), state(state), moves(moves) {}
 
 	const ls::Gamemode& getGamemode() const noexcept {
 		return gamemode;
@@ -52,7 +53,7 @@ public:
 		std::vector<ls::Move> newMoves(moves.begin(), moves.end());
 		newMoves.emplace_back(action);
 		if (newMoves.size() == state.getSnakes().size())
-			return State(gamemode.stepState(state, newMoves));
-		return State(state, std::move(newMoves));
+			return State(gamemode, gamemode.stepState(state, newMoves));
+		return State(gamemode, state, std::move(newMoves));
 	}
 };

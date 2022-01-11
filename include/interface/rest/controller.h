@@ -68,10 +68,28 @@ namespace rest {
 		}
 
 		static GameInfo FromDTO(const Object<rest::dto::Game>& info) {
-			return GameInfo{//TODO: implement ruleset
+			return GameInfo{
 				.id = info->id,
 				.timeout = info->timeout,
-				.source = info->source
+				.source = info->source,
+				.rules = {
+					.name = info->ruleset->name,
+					.version = info->ruleset->version,
+					.settings = {
+						.foodSpawnChance = info->ruleset->settings->foodSpawnChance,
+						.minimumFood = info->ruleset->settings->hazardDamagePerTurn,
+						.hazardDamagePerTurn = info->ruleset->settings->hazardDamagePerTurn,
+						.royale = {
+							.shrinkEveryNTurns = info->ruleset->settings->shrinkEveryNTurns
+						},
+						.squad = {
+							.allowBodyCollisions = info->ruleset->settings->allowBodyCollisions,
+							.sharedElimination = info->ruleset->settings->sharedElimination,
+							.sharedHealth = info->ruleset->settings->sharedHealth,
+							.sharedLength = info->ruleset->settings->sharedLength
+						}
+					}
+				}
 			};
 		}
 		static ls::State FromDTO2(const Object<rest::dto::Board>& info, const std::string* id) {
