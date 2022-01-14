@@ -34,6 +34,9 @@ public:
 		return state.getSnakes().size();
 	}
 
+	ls::SnakeFlags currentParty() {
+		return state.getSnake(getTurn()).getSquad();
+	}
 	size_t getTurn() const noexcept {
 		return moves.size();
 	}

@@ -1,14 +1,23 @@
 #pragma once
 
+#include <functional>
+#include <limits>
+#include <map>
+#include <type_traits>
+
 struct SearchSettings {
 	unsigned initialDepth;
 	unsigned timeout;
 	unsigned numThreads;
 };
 
+//https://stackoverflow.com/questions/53673442/simplest-way-to-determine-return-type-of-function
+template<typename Callable>
+using return_type_of = typename decltype(std::function{std::declval<Callable>()})::result_type;
+
 //TODO: implement timeouts
 //TODO: implement iterative deepening
-template<typename State, typename Move, typename Evaluator>
+template<typename State, typename Move, typename Evaluator, typename Party>
 class Search final {
 private:
 	const SearchSettings settings;
@@ -33,6 +42,20 @@ private:
 			}
 		}
 		return alpha;
+	}
+
+	static std::map<Party, float> maxN(const State& state, unsigned depth, Evaluator& evaluator) {
+		if (state.isGameOver() || depth==0)
+			return std::move(evaluator.evaluateAll(state));
+		const auto party = state.currentParty();
+		std::map<Party, float> best;
+		for (const auto& action : state.getValidActions()) {
+			auto next = state.afterMove(action);
+			auto scores = std::move(maxN(next, depth-1, evaluator));
+			if (best[party] < scores[party])
+				best = std::move(scores);
+		}
+		return best;
 	}
 
 public:
