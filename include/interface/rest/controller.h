@@ -93,17 +93,18 @@ namespace rest {
 			};
 		}
 		static ls::State FromDTO2(const Object<rest::dto::Board>& info, const std::string* id) {
+			//FIXME: load squads
 			auto width = info->width;
 			auto height = info->height;
 			std::vector<ls::Snake> snakes;
 			std::vector<ls::Position> food = FromDTO3(info->food);
 			for (auto& s : *(info->snakes)) {
 				if (id != nullptr && *id == *(s->id))
-					snakes.emplace_back(FromDTO3(s->body), s->health);
+					snakes.emplace_back(FromDTO3(s->body), s->health, ls::SnakeFlags::ByIndex(snakes.size()));
 			}
 			for (auto& s : *(info->snakes)) {
 				if (id == nullptr || *id != *(s->id))
-					snakes.emplace_back(FromDTO3(s->body), s->health);
+					snakes.emplace_back(FromDTO3(s->body), s->health, ls::SnakeFlags::ByIndex(snakes.size()));
 			}
 			return ls::State((unsigned)width.getValue(0), (unsigned)height.getValue(0), std::move(snakes), food);
 		}

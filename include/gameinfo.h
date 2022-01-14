@@ -6,7 +6,7 @@
 #include <string>
 
 #include <libsnake/gamemode.h>
-#include <libsnake/gamemodes/arena.h>
+#include <libsnake/gamemodes/standard.h>
 #include <libsnake/gamemodes/challenge.h>
 #include <libsnake/gamemodes/squad.h>
 
@@ -84,7 +84,7 @@ struct GameInfo {
 	
 	std::unique_ptr<ls::Gamemode> constructGamemode() const {
 		if (rules.name == GamemodeNames::Standard) {
-			return std::make_unique<ls::gm::ArenaGamemode>();
+			return std::make_unique<ls::gm::StandardGamemode>();
 		} else if (rules.name == GamemodeNames::Solo) {
 			return std::make_unique<ls::gm::ChallengeGamemode>();
 		} else if (rules.name == GamemodeNames::Royale) {

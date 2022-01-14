@@ -3,7 +3,7 @@
 #include <libsnake/move.h>
 #include <libsnake/state.h>
 #include <libsnake/gamemode.h>
-#include <libsnake/gamemodes/arena.h>
+#include <libsnake/gamemodes/standard.h>
 
 #include <iostream>
 #include <bitset>

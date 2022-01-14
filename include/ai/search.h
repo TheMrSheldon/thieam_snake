@@ -6,6 +6,8 @@ struct SearchSettings {
 	unsigned numThreads;
 };
 
+//TODO: implement timeouts
+//TODO: implement iterative deepening
 template<typename State, typename Move, typename Evaluator>
 class Search final {
 private:

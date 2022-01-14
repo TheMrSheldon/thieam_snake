@@ -54,7 +54,7 @@ public:
 		std::memset(data.data(), 0, data.size()*sizeof(decltype(data)::value_type));
 	}
 	inline bool isInbounds(const ls::Position& pos) const noexcept {
-		return pos.x >= 0 && pos.y >= 0 && pos.x < width && pos.y < height;
+		return pos.x >= 0 && pos.y >= 0 && (unsigned)pos.x < width && (unsigned)pos.y < height;
 	}
 	inline unsigned getWidth() const noexcept { return width; }
 	inline unsigned getHeight() const noexcept { return height; }

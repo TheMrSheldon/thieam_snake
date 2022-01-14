@@ -16,9 +16,10 @@ void run() {
 		OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 		OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
 		OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, connectionProvider);
+		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
 		agents::Robin robin;
-		auto controller = std::make_shared<rest::Controller>(robin);
+		auto controller = std::make_shared<rest::Controller>(robin, objectMapper);
 		router->addController(controller);
 
 		oatpp::network::Server server(connectionProvider, connectionHandler);
