@@ -6,6 +6,7 @@
 #include "state.h"
 
 #include <inttypes.h>
+#include <map>
 #include <vector>
 
 struct SnakeEval final {
@@ -136,4 +137,5 @@ public:
 
 	Evaluation evaluate(const ls::State& state) noexcept;
 	float evaluate(const State& state) noexcept;
+	std::map<ls::SnakeFlags, float> evaluateAll(const State& state) noexcept;
 };

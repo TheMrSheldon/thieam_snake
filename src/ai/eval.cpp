@@ -95,3 +95,8 @@ float Evaluator::evaluate(const State& state) noexcept {
 		return relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility) - length_penalty;
 	}
 }
+
+std::map<ls::SnakeFlags, float> Evaluator::evaluateAll(const State& state) noexcept {
+	auto eval = evaluate(state.state);
+	//TODO: implement
+}

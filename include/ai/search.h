@@ -47,12 +47,12 @@ private:
 	static std::map<Party, float> maxN(const State& state, unsigned depth, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
 			return std::move(evaluator.evaluateAll(state));
-		const auto party = state.currentParty();
+		const auto party = state.getCurrentParty();
 		std::map<Party, float> best;
 		for (const auto& action : state.getValidActions()) {
 			auto next = state.afterMove(action);
 			auto scores = std::move(maxN(next, depth-1, evaluator));
-			if (best[party] < scores[party])
+			if (best.empty() || best[party] < scores[party])
 				best = std::move(scores);
 		}
 		return best;
@@ -62,16 +62,21 @@ public:
 	Search(SearchSettings settings = {}) noexcept : settings(settings) {}
 	Move findBestMove(const State& state) const {
 		Evaluator eval(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight());
-		float best_score = -std::numeric_limits<float>::infinity();
-		Move best;
-		for (const auto& action : state.getValidActions()) {
-			auto next = state.afterMove(action);
-			auto score = iterativeDeepening(next, eval);
-			if (score >= best_score) {
-				best = action;
-				best_score = score;
+		if (state.getNumParties() == 2) {
+			float best_score = -std::numeric_limits<float>::infinity();
+			Move best;
+			for (const auto& action : state.getValidActions()) {
+				auto next = state.afterMove(action);
+				auto score = iterativeDeepening(next, eval);
+				if (score >= best_score) {
+					best = action;
+					best_score = score;
+				}
 			}
+			return best;
+		} else {
+			const auto party = state.getCurrentParty();
+			return maxN(state, settings.initialDepth, eval)[party];
 		}
-		return best;
 	}
 };
