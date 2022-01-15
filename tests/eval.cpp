@@ -27,40 +27,40 @@ TEST_CASE("Envbuffer State1", "[Envbuffer]") {
 		env.clear();
 		for (unsigned x = 0; x < state.getWidth(); x++) {
 			for (unsigned y = 0; y < state.getHeight(); y++) {
-				CHECK_FALSE(env.isBlockedAtTurn(ls::Position(x,y), 0, 0));
-				CHECK_FALSE(env.isBlockedAtTurn(ls::Position(x,y), 1, 0));
+				CHECK_FALSE(env.isBlockedAtTurn(state, ls::Position(x,y), 0, 0));
+				CHECK_FALSE(env.isBlockedAtTurn(state, ls::Position(x,y), 1, 0));
 			}
 		}
 	//}
 	//SECTION("Fields blocked by snakes") {
 		env.storeSnake(0, s1);
-		CHECK(env.isBlockedAtTurn(s1.getBody()[0], 0, 0));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[0], 0, 0));
 		//Last bodypart
-		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 0));
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 1));
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 2));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 0));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 1));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 2));
 		//Second last bodypart
-		CHECK(env.isBlockedAtTurn(s1.getBody()[7], 0, 0));
-		CHECK(env.isBlockedAtTurn(s1.getBody()[7], 0, 1));
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[7], 0, 2));
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[7], 0, 3));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[7], 0, 0));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[7], 0, 1));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[7], 0, 2));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[7], 0, 3));
 	//}
 	//SECTION("Storing blocked fields") {
-		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 0));
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 3));
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 4));
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 5));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 0));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 3));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 4));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 5));
 		//Overwrite the field initially blocked by the snakes tail
 		env.blockAfterTurn(s1.getBody()[8], 0, 4);
 		//This check should be illegal since snake 0 already claimed this field
 		//CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 0, 3));
 		//This check should be illegal since snake 0 already claimed this field
-		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 4));
-		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 5));
-		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 0, 6));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 4));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 5));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 6));
 		//This is a border-tile and thus part of the territory of snake 0 and snake 1
-		CHECK_FALSE(env.isBlockedAtTurn(s1.getBody()[8], 1, 4));
-		CHECK(env.isBlockedAtTurn(s1.getBody()[8], 1, 5));
+		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 4));
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 5));
 	}
 }
 TEST_CASE("Evaluate State1", "[Evaluation]") {
@@ -82,7 +82,7 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	auto state = ls::State(9,6, {s1, s2}, std::move(food));
 	
 	//Assert correct evaluation
-	Evaluator evaluator(ls::gm::Arena, state.getSnakes().size(), state.getWidth(), state.getHeight());
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
 	auto eval = evaluator.evaluate(state);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -174,7 +174,7 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	REQUIRE(state.getSnake(1).getHeadPos() == ls::Position(2,2));
 
 	//Assert correct evaluation
-	Evaluator evaluator(ls::gm::Arena, state.getSnakes().size(), state.getWidth(), state.getHeight());
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
 	auto eval = evaluator.evaluate(state);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -233,7 +233,7 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	REQUIRE(state.getSnake(1).getHeadPos() == ls::Position(2,2));
 
 	//Assert correct evaluation
-	Evaluator evaluator(ls::gm::Arena, state.getSnakes().size(), state.getWidth(), state.getHeight());
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
 	auto eval = evaluator.evaluate(state);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);

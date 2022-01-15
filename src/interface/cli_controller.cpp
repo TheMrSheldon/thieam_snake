@@ -181,14 +181,14 @@ static ls::State _InputGameState(std::ostream& out) {
 	std::vector<ls::Snake> sd;
 	for (auto& body : snakes) {
 		//std::reverse(body.begin(), body.end());
-		sd.emplace_back(std::move(body), 100);
+		sd.emplace_back(std::move(body), 100, ls::SnakeFlags::ByIndex(sd.size()));
 	}
 	return ls::State(width, height, std::move(sd), std::move(food));
 }
 
 static void EvalCmd(std::ostream& out) {
 	const auto state = _InputGameState(out);
-	Evaluator eval(ls::gm::Arena, state.getSnakes().size(), state.getWidth(), state.getHeight());
+	Evaluator eval(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
 	const auto e = eval.evaluate(state);
 	out << "Evaluating state\n";
 	out << state << "\n";

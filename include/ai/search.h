@@ -8,6 +8,8 @@ struct SearchSettings {
 
 enum class StateOfMind { Grow, Control };
 
+//TODO: implement timeouts
+//TODO: implement iterative deepening
 template<typename State, typename Move, typename Evaluator>
 class Search final {
 private:

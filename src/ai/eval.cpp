@@ -1,6 +1,6 @@
 #include <ai/eval.h>
 
-#include <libsnake/gamemodes/arena.h>
+#include <libsnake/gamemodes/standard.h>
 
 #include <algorithm>
 #include <deque>
