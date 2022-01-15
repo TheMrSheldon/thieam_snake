@@ -4,6 +4,7 @@
 #include <libsnake/snake_flags.h>
 
 #include "state.h"
+#include "state_of_mind.h"
 #include "search.h"
 
 #include <inttypes.h>
@@ -124,6 +125,7 @@ public:
 class Evaluator final {
 private:
 	const ls::Gamemode& gamemode;
+	const StateOfMind& mind;
 	EnvBuffer envbuffer;
 
 	inline void scanProximity(const ls::State& state, Evaluation& results) noexcept;
@@ -131,10 +133,10 @@ private:
 	Evaluator(const Evaluator& other) = delete;
 	Evaluator& operator=(const Evaluator& other) = delete;
 public:
-	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept;
+	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept;
 
 	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }
 
-	Evaluation evaluate(const ls::State& state, unsigned depth, const StateOfMind mindState) noexcept;
-	float evaluate(const State& state, unsigned depth, const StateOfMind mindState) noexcept;
+	Evaluation evaluate(const ls::State& state, unsigned depth) noexcept;
+	float evaluate(const State& state, unsigned depth) noexcept;
 };

@@ -1,6 +1,7 @@
 #include "agents/robin.h"
 
 #include "ai/state.h"
+#include "ai/state_of_mind.h"
 #include "ai/search.h"
 #include "ai/eval.h"
 
@@ -15,8 +16,12 @@ void Robin::startGame(const GameInfo& info) {
 }
 
 ls::Move Robin::getAction(const GameInfo& info, uint32_t turn, ls::State& state) {
+	StateOfMind mind;
+	const auto createEvaluatorCallback = [mind](const State& state) -> Evaluator {
+		return Evaluator(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight(), mind)
+	};
 	Search<State, ls::Move, Evaluator> search({.initialDepth = 10});
-	return search.findBestMove(State(state));
+	return search.findBestMove(State(state), createEvaluatorCallback);
 }
 
 void Robin::endGame(const GameInfo& info) {

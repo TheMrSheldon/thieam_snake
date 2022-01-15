@@ -37,9 +37,12 @@ private:
 
 public:
 	Search(SearchSettings settings = {}) noexcept : settings(settings) {}
-	Move findBestMove(const State& state) const {
-		Evaluator eval(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight());
-		
+
+	template<typename C>
+	Move findBestMove(const State& state, C createEvaluator) const {
+		//Evaluator eval(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight(), mind);
+		Evaluator eval = std::move(C(state)));
+
 		//Determine snake's mind state before applying the minimax to prevent different heuristics from being compared to each other
 		StateOfMind mindState;
 		constexpr auto LengthThreshold = 3;

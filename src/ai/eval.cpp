@@ -8,7 +8,7 @@
 Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept
 	: gamemode(gamemode), envbuffer(numSnakes, width, height) {}
 
-Evaluation Evaluator::evaluate(const ls::State& state, unsigned depth, const StateOfMind mindState) noexcept {
+Evaluation Evaluator::evaluate(const ls::State& state, unsigned depth) noexcept {
 	Evaluation result;
 	result.winner = gamemode.getWinner(state);
 	if (!gamemode.isGameOver(state)) {
@@ -70,8 +70,8 @@ static inline float relEval(float player, float opponent) noexcept {
 	return player / (player + opponent);
 }
 
-float Evaluator::evaluate(const State& state, unsigned depth, const StateOfMind mindState) noexcept {
-	auto eval = evaluate(state.state, depth, mindState);
+float Evaluator::evaluate(const State& state, unsigned depth) noexcept {
+	auto eval = evaluate(state.state, depth);
 	if (eval.winner != ls::SnakeFlags::None) {
 		if (eval.winner.containsAll(ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2))
 			return -50;
@@ -83,7 +83,8 @@ float Evaluator::evaluate(const State& state, unsigned depth, const StateOfMind 
 		+ 5*relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility)
 		+ .05f*relEval((float)eval.snakes[0].foodInReach, (float)eval.snakes[1].foodInReach)
 		+ 3*relEval((float)eval.snakes[0].choice, (float)eval.snakes[1].choice);*/
-	auto robin =  state.state.getSnake(0);
+	return mind.getRating(state, eval);
+	/*auto robin =  state.state.getSnake(0);
 	auto mobilityScore = relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility);
 	int our_length = robin.length();
 
@@ -96,5 +97,5 @@ float Evaluator::evaluate(const State& state, unsigned depth, const StateOfMind 
 		default:
 			auto length_penalty = InitialFoodReward * std::powf(FoodRewardDecay, -our_length);
 			return  - length_penalty;
-	}
+	}*/
 }
