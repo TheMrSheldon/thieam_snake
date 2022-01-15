@@ -48,6 +48,8 @@ private:
 public:
 	inline EnvBuffer(size_t numSnakes, unsigned width, unsigned height) noexcept : width(width), height(height),
 		data(width*height, Entry{}), areaControl(numSnakes, 0), borderControl(numSnakes, 0) {}
+	inline EnvBuffer(EnvBuffer&& other) noexcept : width(other.width), height(other.height), data(std::move(other.data)),
+		areaControl(std::move(other.areaControl)), borderControl(std::move(other.borderControl)) {}
 	inline void storeSnake(size_t snakeIdx, const ls::Snake& snake) noexcept {
 		for (size_t bodyIdx = 0; bodyIdx < snake.length(); ++bodyIdx)
 			blockUntilTurn(snake.getBody()[bodyIdx], snakeIdx, snake.length()-1-bodyIdx);
@@ -134,6 +136,7 @@ private:
 	Evaluator& operator=(const Evaluator& other) = delete;
 public:
 	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept;
+	Evaluator(Evaluator&& other) noexcept;
 
 	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }
 

@@ -5,8 +5,10 @@
 #include <algorithm>
 #include <deque>
 
-Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept
-	: gamemode(gamemode), envbuffer(numSnakes, width, height) {}
+Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept
+	: gamemode(gamemode),  mind(mind), envbuffer(numSnakes, width, height) {}
+
+Evaluator::Evaluator(Evaluator&& other) noexcept : gamemode(other.gamemode), mind(other.mind), envbuffer(std::move(other.envbuffer)) {}
 
 Evaluation Evaluator::evaluate(const ls::State& state, unsigned depth) noexcept {
 	Evaluation result;
@@ -63,39 +65,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 	}
 }
 
-static inline float relEval(float player, float opponent) noexcept {
-	/*if (player >= opponent)
-		return player/(player + opponent);
-	return -opponent/(player + opponent);*/
-	return player / (player + opponent);
-}
-
 float Evaluator::evaluate(const State& state, unsigned depth) noexcept {
-	auto eval = evaluate(state.state, depth);
-	if (eval.winner != ls::SnakeFlags::None) {
-		if (eval.winner.containsAll(ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2))
-			return -50;
-		else if (eval.winner.containsAny(ls::SnakeFlags::Player1))
-			return 100 + depth;
-		return -100 - depth;
-	}
-	/*return .2f*relEval((float)state.state.getSnake(0).getHealth(), (float)state.state.getSnake(1).getHealth())
-		+ 5*relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility)
-		+ .05f*relEval((float)eval.snakes[0].foodInReach, (float)eval.snakes[1].foodInReach)
-		+ 3*relEval((float)eval.snakes[0].choice, (float)eval.snakes[1].choice);*/
-	return mind.getRating(state, eval);
-	/*auto robin =  state.state.getSnake(0);
-	auto mobilityScore = relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility);
-	int our_length = robin.length();
-
-	constexpr auto InitialFoodReward = 8;	//Feeding the first piece of food in endgame mode awards 2^-6 times this value's points
-	constexpr auto FoodRewardDecay = 2;
-	
-	switch(mindState){
-		case StateOfMind::Grow:
-			return our_length + (100 - robin.getHealth())/100 + mobilityScore/1000;
-		default:
-			auto length_penalty = InitialFoodReward * std::powf(FoodRewardDecay, -our_length);
-			return  - length_penalty;
-	}*/
+    auto eval = evaluate(state.state, depth);
+	return mind.getRating(state.state, eval);
 }

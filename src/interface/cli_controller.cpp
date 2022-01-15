@@ -188,8 +188,9 @@ static ls::State _InputGameState(std::ostream& out) {
 
 static void EvalCmd(std::ostream& out) {
 	const auto state = _InputGameState(out);
-	Evaluator eval(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
-	const auto e = eval.evaluate(state);
+	StateOfMind mind(0);
+	Evaluator eval(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	const auto e = eval.evaluate(state, 1);
 	out << "Evaluating state\n";
 	out << state << "\n";
 	out << "Winner: " << e.winner << '\n';

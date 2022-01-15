@@ -6,8 +6,6 @@ struct SearchSettings {
 	unsigned numThreads;
 };
 
-enum class StateOfMind { Grow, Control };
-
 //TODO: implement timeouts
 //TODO: implement iterative deepening
 template<typename State, typename Move, typename Evaluator>
@@ -18,16 +16,16 @@ private:
 	float iterativeDeepening(const State& state, Evaluator& evaluator) const {
 		return -minimax(state, settings.initialDepth-1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), evaluator);
 	}
-	static float minimax(const State& state, unsigned depth, float alpha, float beta, Evaluator& evaluator, MindState mindState) {
+	static float minimax(const State& state, unsigned depth, float alpha, float beta, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
-			return evaluator.evaluate(state, depth, mindState);
+			return evaluator.evaluate(state, depth);
 		for (const auto& action : state.getValidActions()) {
 			auto next = state.afterMove(action);
 			float score;
 			if ((state.getTurn() == 0) != (next.getTurn() == 0))
-				score = -minimax(next, depth-1, -beta, -alpha, evaluator, mindState);
+				score = -minimax(next, depth-1, -beta, -alpha, evaluator);
 			else
-				score = minimax(next, depth-1, alpha, beta, evaluator, mindState);
+				score = minimax(next, depth-1, alpha, beta, evaluator);
 			if (score > alpha) {
 				alpha = score;
 				if (alpha >= beta)
@@ -42,22 +40,13 @@ public:
 
 	template<typename C>
 	Move findBestMove(const State& state, C createEvaluator) const {
-		//Evaluator eval(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight(), mind);
-		Evaluator eval = std::move(C(state)));
-
-		//Determine snake's mind state before applying the minimax to prevent different heuristics from being compared to each other
-		StateOfMind mindState;
-		constexpr auto LengthThreshold = 3;
-		if(state.state.getSnake(0).length() <= LengthThreshold && eval.snakes[0].foodInReach > 0)
-			mindState = StateOfMind.Grow;
-		else
-			mindState = StateOfMind.Control;
+		Evaluator eval = std::move(createEvaluator(state));
 
 		float best_score = -std::numeric_limits<float>::infinity();
 		Move best;
 		for (const auto& action : state.getValidActions()) {
 			auto next = state.afterMove(action);
-			auto score = iterativeDeepening(next, eval, mindState);
+			auto score = iterativeDeepening(next, eval);
 			if (score >= best_score) {
 				best = action;
 				best_score = score;
