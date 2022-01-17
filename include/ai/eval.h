@@ -4,6 +4,8 @@
 #include <libsnake/snake_flags.h>
 
 #include "state.h"
+#include "state_of_mind.h"
+#include "search.h"
 
 #include <inttypes.h>
 #include <map>
@@ -47,6 +49,8 @@ private:
 public:
 	inline EnvBuffer(size_t numSnakes, unsigned width, unsigned height) noexcept : width(width), height(height),
 		data(width*height, Entry{}), areaControl(numSnakes, 0), borderControl(numSnakes, 0) {}
+	inline EnvBuffer(EnvBuffer&& other) noexcept : width(other.width), height(other.height), data(std::move(other.data)),
+		areaControl(std::move(other.areaControl)), borderControl(std::move(other.borderControl)) {}
 	inline void storeSnake(size_t snakeIdx, const ls::Snake& snake) noexcept {
 		for (size_t bodyIdx = 0; bodyIdx < snake.length(); ++bodyIdx)
 			blockUntilTurn(snake.getBody()[bodyIdx], snakeIdx, snake.length()-1-bodyIdx);
@@ -124,6 +128,7 @@ public:
 class Evaluator final {
 private:
 	const ls::Gamemode& gamemode;
+	const StateOfMind& mind;
 	EnvBuffer envbuffer;
 
 	inline void scanProximity(const ls::State& state, Evaluation& results) noexcept;
@@ -131,11 +136,12 @@ private:
 	Evaluator(const Evaluator& other) = delete;
 	Evaluator& operator=(const Evaluator& other) = delete;
 public:
-	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept;
+	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept;
+	Evaluator(Evaluator&& other) noexcept;
 
 	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }
-
-	Evaluation evaluate(const ls::State& state) noexcept;
-	float evaluate(const State& state) noexcept;
-	std::map<ls::SnakeFlags, float> evaluateAll(const State& state) noexcept;
+	
+	Evaluation evaluate(const ls::State& state, unsigned depth) noexcept;
+	float evaluate(const State& state, unsigned depth) noexcept;
+	std::map<ls::SnakeFlags, float> evaluateAll(const State& state, unsigned depth) noexcept;
 };

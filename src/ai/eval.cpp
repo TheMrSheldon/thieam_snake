@@ -5,10 +5,12 @@
 #include <algorithm>
 #include <deque>
 
-Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height) noexcept
-	: gamemode(gamemode), envbuffer(numSnakes, width, height) {}
+Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept
+	: gamemode(gamemode),  mind(mind), envbuffer(numSnakes, width, height) {}
 
-Evaluation Evaluator::evaluate(const ls::State& state) noexcept {
+Evaluator::Evaluator(Evaluator&& other) noexcept : gamemode(other.gamemode), mind(other.mind), envbuffer(std::move(other.envbuffer)) {}
+
+Evaluation Evaluator::evaluate(const ls::State& state, unsigned depth) noexcept {
 	Evaluation result;
 	result.winner = gamemode.getWinner(state);
 	if (!gamemode.isGameOver(state)) {
@@ -63,40 +65,12 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 	}
 }
 
-static inline float relEval(float player, float opponent) noexcept {
-	/*if (player >= opponent)
-		return player/(player + opponent);
-	return -opponent/(player + opponent);*/
-	return player/(player + opponent);
-}
-
-float Evaluator::evaluate(const State& state) noexcept {
-	auto eval = evaluate(state.state);
-	if (eval.winner != ls::SnakeFlags::None) {
-		if (eval.winner.containsAll(ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2))
-			return -50;
-		else if (eval.winner.containsAny(ls::SnakeFlags::Player1))
-			return 100;
-		return -100;
-	}
-	/*return .2f*relEval((float)state.state.getSnake(0).getHealth(), (float)state.state.getSnake(1).getHealth())
-		+ 5*relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility)
-		+ .05f*relEval((float)eval.snakes[0].foodInReach, (float)eval.snakes[1].foodInReach)
-		+ 3*relEval((float)eval.snakes[0].choice, (float)eval.snakes[1].choice);*/
-	int our_length = state.state.getSnake(0).length();
-
-	constexpr auto LengthThreshold = 5;
-	constexpr auto InitialFoodReward = 4;	//Feeding the first piece of food in endgame mode awards 2^-6 times this value's points
-	constexpr auto FoodRewardDecay = 2;
-	if(our_length < LengthThreshold){
-		return our_length - LengthThreshold - InitialFoodReward;	//Make sure that this returns at most the minimum endgameevaluation value
-	} else {
-		auto length_penalty = FoodRewardDecay * InitialFoodReward * std::powf(FoodRewardDecay, -our_length);
-		return relEval((float)eval.snakes[0].mobility, (float)eval.snakes[1].mobility) - length_penalty;
-	}
-}
-
-std::map<ls::SnakeFlags, float> Evaluator::evaluateAll(const State& state) noexcept {
-	auto eval = evaluate(state.state);
+std::map<ls::SnakeFlags, float> Evaluator::evaluateAll(const State& state, unsigned depth) noexcept {
+	auto eval = evaluate(state.state, depth);
 	//TODO: implement
+}
+
+float Evaluator::evaluate(const State& state, unsigned depth) noexcept {
+    auto eval = evaluate(state.state, depth);
+	return mind.getRating(state.state, eval);
 }

@@ -27,7 +27,7 @@ private:
 	}
 	static float minimax(const State& state, unsigned depth, float alpha, float beta, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
-			return evaluator.evaluate(state);
+			return evaluator.evaluate(state, depth);//FIXME: this pass the actual depth instead of the remaining one
 		for (const auto& action : state.getValidActions()) {
 			auto next = state.afterMove(action);
 			float score;
@@ -46,7 +46,7 @@ private:
 
 	static std::map<Party, float> maxN(const State& state, unsigned depth, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
-			return std::move(evaluator.evaluateAll(state));
+			return std::move(evaluator.evaluateAll(state, depth));//FIXME: this pass the actual depth instead of the remaining one
 		const auto party = state.getCurrentParty();
 		std::map<Party, float> best;
 		for (const auto& action : state.getValidActions()) {
@@ -60,8 +60,11 @@ private:
 
 public:
 	Search(SearchSettings settings = {}) noexcept : settings(settings) {}
-	Move findBestMove(const State& state) const {
-		Evaluator eval(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight());
+
+	template<typename C>
+	Move findBestMove(const State& state, C createEvaluator) const {
+		Evaluator eval = std::move(createEvaluator(state));
+
 		if (state.getNumParties() == 2) {
 			float best_score = -std::numeric_limits<float>::infinity();
 			Move best;

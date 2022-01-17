@@ -82,8 +82,9 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	auto state = ls::State(9,6, {s1, s2}, std::move(food));
 	
 	//Assert correct evaluation
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
-	auto eval = evaluator.evaluate(state);
+	StateOfMind mind(0);
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
 	
@@ -174,8 +175,9 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	REQUIRE(state.getSnake(1).getHeadPos() == ls::Position(2,2));
 
 	//Assert correct evaluation
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
-	auto eval = evaluator.evaluate(state);
+	StateOfMind mind(0);
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
 	/** Board
@@ -233,8 +235,9 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	REQUIRE(state.getSnake(1).getHeadPos() == ls::Position(2,2));
 
 	//Assert correct evaluation
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight());
-	auto eval = evaluator.evaluate(state);
+	StateOfMind mind(0);
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
 	/** Board
