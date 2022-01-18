@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits>
+
 struct SearchSettings {
 	unsigned initialDepth;
 	unsigned timeout;

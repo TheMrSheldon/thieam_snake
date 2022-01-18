@@ -26,6 +26,8 @@ static inline void ClearLastLines(std::ostream& os, size_t num) {
 }
 
 static std::pair<cli::detail::KeyType, char> GetKey() {
+	using KeyType = cli::detail::KeyType;
+#ifdef WIN32
 	int c = _getch();
 	switch (c) {
 		case EOF:
@@ -60,6 +62,42 @@ static std::pair<cli::detail::KeyType, char> GetKey() {
 		}
 	}
 	return std::make_pair(cli::detail::KeyType::ignored, ' ');
+#else
+	int c = std::getchar();
+	switch(c) {
+		case EOF:
+		case 4:  // EOT
+			return std::make_pair(KeyType::eof,' ');
+			break;
+		case 127: return std::make_pair(KeyType::backspace,' '); break;
+		case 10: return std::make_pair(KeyType::ret,' '); break;
+		case 27: // symbol
+			c = std::getchar();
+			if ( c == 91 ) {// arrow keys
+				c = std::getchar();
+				switch(c) {
+					case 51:
+						c = std::getchar();
+						if (c == 126) return std::make_pair(KeyType::canc,' ');
+						else return std::make_pair(KeyType::ignored,' ');
+						break;
+					case 65: return std::make_pair(KeyType::up,' ');
+					case 66: return std::make_pair(KeyType::down,' ');
+					case 68: return std::make_pair(KeyType::left,' ');
+					case 67: return std::make_pair(KeyType::right,' ');
+					case 70: return std::make_pair(KeyType::end,' ');
+					case 72: return std::make_pair(KeyType::home,' ');
+					default: return std::make_pair(KeyType::ignored,' ');
+				}
+			}
+			break;
+		default: {// hopefully ascii
+			const char ch = static_cast<char>(c);
+			return std::make_pair(KeyType::ascii, ch);
+		}
+	}
+	return std::make_pair(KeyType::ignored,' ');
+#endif
 }
 
 static void _PrintBoard(std::ostream& out, unsigned width, unsigned height, ls::Position selected, ls::Foods& food, std::vector<std::vector<ls::Position>>& snakes) {
