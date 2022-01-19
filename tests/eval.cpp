@@ -83,7 +83,10 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	
 	//Assert correct evaluation
 	StateOfMind mind(0);
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	for (auto& snake : state.getSnakes())
+		mindmap.insert({snake.getSquad(), mind});
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mindmap);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -176,7 +179,10 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 
 	//Assert correct evaluation
 	StateOfMind mind(0);
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	for (auto& snake : state.getSnakes())
+		mindmap.insert({snake.getSquad(), mind});
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mindmap);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -236,7 +242,10 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 
 	//Assert correct evaluation
 	StateOfMind mind(0);
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	for (auto& snake : state.getSnakes())
+		mindmap.insert({snake.getSquad(), mind});
+	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mindmap);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
