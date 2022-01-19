@@ -6,11 +6,13 @@
 #include "gameinfo.h"
 #include "agent.h"
 
+#include <libsnake/definitions.h>
 #include <libsnake/state.h>
 
 #include <oatpp/web/server/api/ApiController.hpp>
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/macro/component.hpp>
+#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
 
 #include <vector>
 
@@ -29,7 +31,9 @@ namespace rest {
 		 * @param agent - the agent used to answer the queries.
 		 * @param objectMapper - default object mapper used to serialize/deserialize DTOs.
 		 */
-		Controller(Agent& agent, OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)) : oatpp::web::server::api::ApiController(objectMapper), agent(agent) {}
+		Controller(Agent& agent, OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)) : oatpp::web::server::api::ApiController(objectMapper), agent(agent) {
+			ASSERT(((oatpp::parser::json::mapping::ObjectMapper&)*objectMapper).getDeserializer()->getConfig()->allowUnknownFields, "We want to allow unknown json fields");
+		}
 	public:
 		ENDPOINT("GET", "/", root) {
 			auto dto = rest::dto::SnakeInfo::createShared();
