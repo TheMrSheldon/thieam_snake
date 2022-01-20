@@ -227,7 +227,7 @@ static ls::State _InputGameState(std::ostream& out) {
 static void EvalCmd(std::ostream& out) {
 	const auto state = _InputGameState(out);
 	StateOfMind mind(0);
-	Evaluator eval(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	Evaluator eval(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mind);
 	const auto e = eval.evaluate(state, 1);
 	out << "Evaluating state\n";
 	out << state << "\n";

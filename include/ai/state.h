@@ -31,7 +31,7 @@ public:
 		return state.getHeight();
 	}
 	size_t getNumPlayers() const noexcept {
-		return state.getSnakes().size();
+		return state.getNumSnakes();
 	}
 
 	size_t getTurn() const noexcept {
@@ -52,7 +52,7 @@ public:
 	State afterMove(ls::Move action) const noexcept {
 		std::vector<ls::Move> newMoves(moves.begin(), moves.end());
 		newMoves.emplace_back(action);
-		if (newMoves.size() == state.getSnakes().size())
+		if (newMoves.size() == state.getNumSnakes())
 			return State(gamemode, gamemode.stepState(state, newMoves));
 		return State(gamemode, state, std::move(newMoves));
 	}
