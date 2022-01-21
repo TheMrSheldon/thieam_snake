@@ -47,13 +47,13 @@ namespace rest {
 		}
 		
 		ENDPOINT("POST", "/start", start, BODY_DTO(Object<rest::dto::Gameinfo>, body)) {
-			agent.startGame(FromDTO(body->game));
+			agent.startGame(body->game->createGameInfo());
 			return createResponse(Status::CODE_200, "OK");
 		}
 
 		ENDPOINT("POST", "/move", move, BODY_DTO(Object<rest::dto::Gameinfo>, body)) {
-			auto state = FromDTO2(body->board, body->you->id.get());
-			auto move = agent.getAction(FromDTO(body->game), body->turn, state);
+			auto state = body->board->createState(body->you->id.get());
+			auto move = agent.getAction(body->game->createGameInfo(), body->turn, state);
 			auto dto = rest::dto::Move::createShared();
 			if (move == ls::Move::down)
 				dto->move = "down";
@@ -67,57 +67,8 @@ namespace rest {
 		}
 
 		ENDPOINT("POST", "/end", end, BODY_DTO(Object<rest::dto::Gameinfo>, body)) {
-			agent.endGame(FromDTO(body->game));
+			agent.endGame(body->game->createGameInfo());
 			return createResponse(Status::CODE_200, "OK");
-		}
-
-		static GameInfo FromDTO(const Object<rest::dto::Game>& info) {
-			return GameInfo{
-				.id = info->id,
-				.timeout = info->timeout,
-				.source = info->source,
-				.rules = {
-					.name = info->ruleset->name,
-					.version = info->ruleset->version,
-					.settings = {
-						.foodSpawnChance = info->ruleset->settings->foodSpawnChance,
-						.minimumFood = info->ruleset->settings->hazardDamagePerTurn,
-						.hazardDamagePerTurn = info->ruleset->settings->hazardDamagePerTurn,
-						.royale = {
-							.shrinkEveryNTurns = info->ruleset->settings->shrinkEveryNTurns
-						},
-						.squad = {
-							.allowBodyCollisions = info->ruleset->settings->allowBodyCollisions,
-							.sharedElimination = info->ruleset->settings->sharedElimination,
-							.sharedHealth = info->ruleset->settings->sharedHealth,
-							.sharedLength = info->ruleset->settings->sharedLength
-						}
-					}
-				}
-			};
-		}
-		static ls::State FromDTO2(const Object<rest::dto::Board>& info, const std::string* id) {
-			//FIXME: load squads
-			auto width = info->width;
-			auto height = info->height;
-			std::vector<ls::Snake> snakes;
-			std::vector<ls::Position> food = FromDTO3(info->food);
-			for (auto& s : *(info->snakes)) {
-				if (id != nullptr && *id == *(s->id))
-					snakes.emplace_back(FromDTO3(s->body), s->health, ls::SnakeFlags::ByIndex(snakes.size()));
-			}
-			for (auto& s : *(info->snakes)) {
-				if (id == nullptr || *id != *(s->id))
-					snakes.emplace_back(FromDTO3(s->body), s->health, ls::SnakeFlags::ByIndex(snakes.size()));
-			}
-			return ls::State((unsigned)width.getValue(0), (unsigned)height.getValue(0), std::move(snakes), food);
-		}
-		static std::vector<ls::Position> FromDTO3(const oatpp::data::mapping::type::DTO::Vector<Object<rest::dto::Position>>& pos) {
-			std::vector<ls::Position> ret;
-			ret.reserve(pos->size());
-			for (auto& p : *pos)
-				ret.emplace_back(ls::Position(p->x, p->y));
-			return std::move(ret);
 		}
 	};
 }
