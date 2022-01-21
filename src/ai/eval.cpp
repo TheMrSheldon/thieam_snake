@@ -68,7 +68,10 @@ void Evaluator::scanProximity(const ls::State& state, unsigned depth, Evaluation
 
 std::map<ls::SnakeFlags, float> Evaluator::evaluateAll(const State& state, unsigned depth) noexcept {
 	auto eval = evaluate(state.state, depth);
-	return std::map<ls::SnakeFlags, float>(); // TODO
+	std::map<ls::SnakeFlags, float> ret;
+	for (auto& entry : mind)
+		ret[entry.first] = entry.second.getRating(state.state, eval);
+	return std::move(ret);
 }
 
 float Evaluator::evaluate(const State& state, unsigned depth) noexcept {
