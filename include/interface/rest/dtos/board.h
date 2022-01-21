@@ -40,7 +40,7 @@ namespace rest::dto {
 			ls::SnakeFlags solos;
 
 		public:
-			SquadInfo(Vector<Object<Battlesnake>> snakes, const std::string& localPlayer) {
+			SquadInfo(const Vector<Object<Battlesnake>>& snakes, const std::string& localPlayer) {
 				for (size_t i = 0; i < snakes->size(); ++i) {
 					const auto& snake = (*snakes)[i];
 					const auto flag = ls::SnakeFlags::ByIndex(i);
@@ -60,7 +60,7 @@ namespace rest::dto {
 				}
 			}
 
-			std::vector<ls::Snake> createSnakeVector(Vector<Object<Battlesnake>> snakes) const {
+			std::vector<ls::Snake> createSnakeVector(const Vector<Object<Battlesnake>>& snakes) const {
 				std::vector<ls::Snake> ret;
 				ret.reserve(snakes->size());
 				//Add the snakes grouped by squad starting with the local player's snake
@@ -84,7 +84,7 @@ namespace rest::dto {
 				}
 				//Add the soloing players
 				for (size_t i = 0; i < snakes->size(); i++) {
-					if (i != localPlayerIndex && solos.containsAny(i)) {
+					if (i != localPlayerIndex && solos.containsAny(ls::SnakeFlags::ByIndex(i))) {
 						const auto flags = ls::SnakeFlags::ByIndex(ret.size());
 						const auto& snake = (*snakes)[i];
 						ret.emplace_back(FromDTO(snake->body), snake->health, flags);
@@ -103,6 +103,7 @@ namespace rest::dto {
 						}
 					}
 				}
+				ASSERT(ret.size() == snakes->size(), "No snakes shall be lost");
 				return std::move(ret);
 			}
 		};
