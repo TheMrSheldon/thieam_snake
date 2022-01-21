@@ -24,7 +24,11 @@ ls::Move Robin::getAction(const GameInfo& info, uint32_t turn, ls::State& state)
 		mind.setTarget(StateOfMind::Target::Control);
 	//
 	const auto createEvaluatorCallback = [mind](const State& state) -> Evaluator {
-		return Evaluator(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight(), mind);
+		std::map<ls::SnakeFlags, StateOfMind> mindmap;
+		for (auto& snake : state.state.getSnakes())
+			mindmap.insert({snake.getSquad(), mind});
+			//mindmap[snake.getSquad()] = mind;
+		return Evaluator(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight(), mindmap);
 	};
 	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10, .timeout = info.timeout-50});
 	const auto gamemode = info.constructGamemode();

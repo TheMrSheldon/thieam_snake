@@ -23,6 +23,7 @@ struct SnakeEval final {
 struct Evaluation final {
 	ls::SnakeFlags winner;
 	std::vector<SnakeEval> snakes;
+	unsigned depth;
 };
 
 class EnvBuffer final {
@@ -129,15 +130,15 @@ public:
 class Evaluator final {
 private:
 	const ls::Gamemode& gamemode;
-	const StateOfMind& mind;
+	const std::map<ls::SnakeFlags, StateOfMind> mind;
 	EnvBuffer envbuffer;
 
-	inline void scanProximity(const ls::State& state, Evaluation& results) noexcept;
+	inline void scanProximity(const ls::State& state, unsigned depth, Evaluation& results) noexcept;
 
 	Evaluator(const Evaluator& other) = delete;
 	Evaluator& operator=(const Evaluator& other) = delete;
 public:
-	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept;
+	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const std::map<ls::SnakeFlags, StateOfMind>& mind) noexcept;
 	Evaluator(Evaluator&& other) noexcept;
 
 	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }

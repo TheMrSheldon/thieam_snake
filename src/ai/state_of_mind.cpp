@@ -18,12 +18,13 @@ static inline float relEval(float player, float opponent) noexcept {
 
 float StateOfMind::getRating(const ls::State& state, Evaluation& eval) const noexcept {
     //TODO: implement properly -- this is only a fixed basic 2-player evaluation
+	float depth_delta = 1.0f / (eval.depth + 1);
 	if (eval.winner != ls::SnakeFlags::None) {
 		if (eval.winner.containsAll(ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2))
 			return -50;
 		else if (eval.winner.containsAny(ls::SnakeFlags::Player1))
-			return 100;// + depth;
-		return -100;// - depth;
+			return 100 + depth_delta;// + depth;
+		return -100 + depth_delta;// - depth;
 	}
 
     return .2f*relEval((float)state.getSnake(0).getHealth(), (float)state.getSnake(1).getHealth())
