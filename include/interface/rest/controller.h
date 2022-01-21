@@ -52,7 +52,7 @@ namespace rest {
 		}
 
 		ENDPOINT("POST", "/move", move, BODY_DTO(Object<rest::dto::Gameinfo>, body)) {
-			auto state = body->board->createState(body->you->id.get());
+			auto state = body->board->createState(*(body->you->id.get()));
 			auto move = agent.getAction(body->game->createGameInfo(), body->turn, state);
 			auto dto = rest::dto::Move::createShared();
 			if (move == ls::Move::down)
