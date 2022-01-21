@@ -7,6 +7,7 @@
 #include "state_of_mind.h"
 #include "search.h"
 
+#include <cstring>
 #include <inttypes.h>
 #include <map>
 #include <vector>

@@ -1,19 +1,15 @@
 #pragma once
 
-#include <functional>
+//#include <functional>
 #include <limits>
 #include <map>
-#include <type_traits>
+//#include <type_traits>
 
 struct SearchSettings {
 	unsigned initialDepth;
 	unsigned timeout;
 	unsigned numThreads;
 };
-
-//https://stackoverflow.com/questions/53673442/simplest-way-to-determine-return-type-of-function
-template<typename Callable>
-using return_type_of = typename decltype(std::function{std::declval<Callable>()})::result_type;
 
 //TODO: implement timeouts
 //TODO: implement iterative deepening

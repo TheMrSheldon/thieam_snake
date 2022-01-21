@@ -21,7 +21,7 @@ TEST_CASE("Envbuffer State1", "[Envbuffer]") {
 	auto s1 = ls::Snake(std::move(snake1), ls::Move::left, 82);
 	auto s2 = ls::Snake(std::move(snake2), ls::Move::down, 19);
 	auto state = ls::State(9,6, {s1, s2}, std::move(food));
-	EnvBuffer env(state.getSnakes().size(), state.getWidth(), state.getHeight());
+	EnvBuffer env(state.getNumSnakes(), state.getWidth(), state.getHeight());
 
 	SECTION("Clearing") {
 		env.clear();
@@ -58,8 +58,8 @@ TEST_CASE("Envbuffer State1", "[Envbuffer]") {
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 4));
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 5));
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 0, 6));
-		//This is a border-tile and thus part of the territory of snake 0 and snake 1
-		CHECK_FALSE(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 4));
+		//This is a border-tile and thus part of the territory of snake 0 since it is longer
+		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 4));
 		CHECK(env.isBlockedAtTurn(state, s1.getBody()[8], 1, 5));
 	}
 }
@@ -83,7 +83,7 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	
 	//Assert correct evaluation
 	StateOfMind mind(0);
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	Evaluator evaluator(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mind);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -170,13 +170,13 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	//Assert correct setup
 	REQUIRE(state.getWidth() == 4);
 	REQUIRE(state.getHeight() == 4);
-	REQUIRE(state.getSnakes().size() == 2);
+	REQUIRE(state.getNumSnakes() == 2);
 	REQUIRE(state.getSnake(0).getHeadPos() == ls::Position(3,1));
 	REQUIRE(state.getSnake(1).getHeadPos() == ls::Position(2,2));
 
 	//Assert correct evaluation
 	StateOfMind mind(0);
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	Evaluator evaluator(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mind);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -202,11 +202,12 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	 * 	=====================================
 	 * 	0    |             3 |             5
 	 * 	1    |             8 |             5
+	 *  Since snake 1 is longer all border control should be added to its area control
 	 */
-	CHECK(eval.snakes[0].mobility == 3);
+	CHECK(eval.snakes[0].mobility == 8);
 	CHECK(eval.snakes[1].mobility == 8);
-	CHECK(eval.snakes[0].border == 5);
-	CHECK(eval.snakes[1].border == 5);
+	CHECK(eval.snakes[0].border == 0);
+	CHECK(eval.snakes[1].border == 0);
 	CHECK(eval.snakes[0].foodInReach == 0);
 	CHECK(eval.snakes[1].foodInReach == 0);
 }
@@ -230,13 +231,13 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	//Assert correct setup
 	REQUIRE(state.getWidth() == 4);
 	REQUIRE(state.getHeight() == 4);
-	REQUIRE(state.getSnakes().size() == 2);
+	REQUIRE(state.getNumSnakes() == 2);
 	REQUIRE(state.getSnake(0).getHeadPos() == ls::Position(3,1));
 	REQUIRE(state.getSnake(1).getHeadPos() == ls::Position(2,2));
 
 	//Assert correct evaluation
 	StateOfMind mind(0);
-	Evaluator evaluator(ls::gm::Standard, state.getSnakes().size(), state.getWidth(), state.getHeight(), mind);
+	Evaluator evaluator(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mind);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -269,11 +270,12 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	 * 	=====================================
 	 * 	0    |             2 |             2
 	 * 	1    |            12 |             2
+	 *  Since snake 1 is longer all border control should be added to its area control
 	 */
-	CHECK(eval.snakes[0].mobility == 2);
+	CHECK(eval.snakes[0].mobility == 4);
 	CHECK(eval.snakes[1].mobility == 12);
-	CHECK(eval.snakes[0].border == 2);
-	CHECK(eval.snakes[1].border == 2);
+	CHECK(eval.snakes[0].border == 0);
+	CHECK(eval.snakes[1].border == 0);
 	CHECK(eval.snakes[0].foodInReach == 0);
 	CHECK(eval.snakes[1].foodInReach == 0);
 }

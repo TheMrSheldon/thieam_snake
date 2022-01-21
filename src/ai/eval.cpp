@@ -15,7 +15,7 @@ Evaluation Evaluator::evaluate(const ls::State& state, unsigned depth) noexcept 
 	result.winner = gamemode.getWinner(state);
 	if (!gamemode.isGameOver(state)) {
 		result.snakes = std::vector<SnakeEval>();
-		for (size_t snake = 0; snake < state.getSnakes().size(); ++snake) {
+		for (size_t snake = 0; snake < state.getNumSnakes(); ++snake) {
 			result.snakes.emplace_back(SnakeEval{
 				.choice = gamemode.getUnblockedActions(state, 0).size()
 			});
@@ -34,9 +34,9 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 	};
 	// Setup the envbuffer and frontier-queue
 	envbuffer.clear();
-	std::vector<size_t> foodReached(state.getSnakes().size(), 0);
+	std::vector<size_t> foodReached(state.getNumSnakes(), 0);
 	std::deque<PosStr> frontier;
-	for (size_t snake = 0; snake < state.getSnakes().size(); ++snake) {
+	for (size_t snake = 0; snake < state.getNumSnakes(); ++snake) {
 		if (!state.getSnake(snake).isDead()) {
 			envbuffer.storeSnake(snake, state.getSnake(snake));
 			envbuffer.blockAfterTurn(state.getSnake(snake).getHeadPos(), snake, 0);
@@ -57,7 +57,7 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 		}
 	}
 	// Store the results in the Evaluation-datastructur
-	for (size_t snake = 0; snake < state.getSnakes().size(); ++snake) {
+	for (size_t snake = 0; snake < state.getNumSnakes(); ++snake) {
 		results.snakes[snake].mobility = (unsigned)envbuffer.getAreaControl(snake);
 		//results.snakes[snake].bordercontrol = (unsigned)envbuffer.getBorderControl(snake);
 		results.snakes[snake].mobility_per_area = envbuffer.getAreaControl(snake)/(float)(state.getWidth()*state.getHeight());

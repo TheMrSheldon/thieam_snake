@@ -38,7 +38,7 @@ public:
 		return squads.size();
 	}
 	size_t getNumPlayers() const noexcept {
-		return state.getSnakes().size();
+		return state.getNumSnakes();
 	}
 
 	ls::SnakeFlags getCurrentParty() const noexcept {
@@ -65,8 +65,7 @@ public:
 		//Dead snakes make no moves
 		while (newMoves.size() < state.getSnakes().size() && state.getSnake(newMoves.size()).isDead())
 			newMoves.emplace_back(ls::Move::none);
-
-		if (newMoves.size() == state.getSnakes().size())
+		if (newMoves.size() == state.getNumSnakes())
 			return State(gamemode, gamemode.stepState(state, newMoves));
 		return State(gamemode, state, std::move(newMoves));
 	}

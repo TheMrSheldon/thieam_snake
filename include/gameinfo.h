@@ -89,15 +89,20 @@ struct GameInfo {
 			return std::make_unique<ls::gm::ChallengeGamemode>();
 		} else if (rules.name == GamemodeNames::Royale) {
 			//return std::make_unique<ls::gm::RoyaleGamemode>();
-			throw std::exception("The constrictor gamemode is not yet implemented");
+			throw std::runtime_error("The constrictor gamemode is not yet implemented");
 		} else if (rules.name == GamemodeNames::Squad) {
-			return std::make_unique<ls::gm::SquadGamemode>();
+			auto gm = std::make_unique<ls::gm::SquadGamemode>();
+			gm->setAllowBodyCollisions(rules.settings.squad.allowBodyCollisions);
+			gm->setSharedElimination(rules.settings.squad.sharedElimination);
+			gm->setSharedHealth(rules.settings.squad.sharedHealth);
+			gm->setSharedLength(rules.settings.squad.sharedLength);
+			return std::move(gm);
 		} else if (rules.name == GamemodeNames::Constrictor) {
 			//return std::make_unique<ls::gm::ConstrictorGamemode>();
-			throw std::exception("The constrictor gamemode is not yet implemented");
+			throw std::runtime_error("The constrictor gamemode is not yet implemented");
 		} else {
 			std::string msg = "The gamemode '"+rules.name+"' is unknown";
-			throw std::exception(msg.c_str());
+			throw std::runtime_error(msg);
 		}
 	}	
 };
