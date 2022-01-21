@@ -18,16 +18,20 @@ class Search final {
 private:
 	const SearchSettings settings;
 
+	unsigned getTargetDepth(size_t playerCount) const noexcept {
+		return (settings.initialDepth/playerCount)*playerCount;
+	}
+
 	float iterativeDeepening(const State& state, Evaluator& evaluator) const {
-		return -minimax(state, settings.initialDepth-1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), evaluator);
+		return -minimax(state, getTargetDepth(state.getNumParties())-1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), evaluator);
 	}
 	static float minimax(const State& state, unsigned depth, float alpha, float beta, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
-			return evaluator.evaluate(state, depth);//FIXME: this pass the actual depth instead of the remaining one
+			return evaluator.evaluate(state, depth);
 		for (const auto& action : state.getValidActions()) {
 			auto next = state.afterMove(action);
 			float score;
-			if ((state.getTurn() == 0) != (next.getTurn() == 0))
+			if (state.getCurrentParty() != next.getCurrentParty())
 				score = -minimax(next, depth-1, -beta, -alpha, evaluator);
 			else
 				score = minimax(next, depth-1, alpha, beta, evaluator);
@@ -42,7 +46,7 @@ private:
 
 	static std::map<Party, float> maxN(const State& state, unsigned depth, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
-			return std::move(evaluator.evaluateAll(state, depth));//FIXME: this pass the actual depth instead of the remaining one
+			return std::move(evaluator.evaluateAll(state, depth));
 		const auto party = state.getCurrentParty();
 		std::map<Party, float> best;
 		for (const auto& action : state.getValidActions()) {
@@ -75,7 +79,17 @@ public:
 			return best;
 		} else {
 			const auto party = state.getCurrentParty();
-			return maxN(state, settings.initialDepth, eval)[party];
+			float best_score = -std::numeric_limits<float>::infinity();
+			Move best;
+			for (const auto& action : state.getValidActions()) {
+				auto next = state.afterMove(action);
+				auto score = maxN(state, getTargetDepth(state.getNumParties())-1, eval)[party];
+				if (score >= best_score) {
+					best = action;
+					best_score = score;
+				}
+			}
+			return best;
 		}
 	}
 };

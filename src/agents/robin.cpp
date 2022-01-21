@@ -14,20 +14,18 @@ Robin::Robin() noexcept : Agent("THIeam", "#8b00ff", "smart-caterpillar", "mouse
 void Robin::startGame(const GameInfo& info) {}
 
 ls::Move Robin::getAction(const GameInfo& info, uint32_t turn, ls::State& state) {
-	StateOfMind mind(state.getSnake(0).getSquad());
 	//
 	//Determine snake's mind state before applying the search to prevent different heuristics from being compared to each other
-	constexpr auto LengthThreshold = 3;
-	if(state.getSnake(0).length() <= LengthThreshold || state.getSnake(0).getHealth() <= 20)
-		mind.setTarget(StateOfMind::Target::Grow);
-	else
-		mind.setTarget(StateOfMind::Target::Control);
+	//constexpr auto LengthThreshold = 3;
+	//if(state.getSnake(0).length() <= LengthThreshold || state.getSnake(0).getHealth() <= 20)
+	//	mind.setTarget(StateOfMind::Target::Grow);
+	//else
+	//	mind.setTarget(StateOfMind::Target::Control);
 	//
-	const auto createEvaluatorCallback = [mind](const State& state) -> Evaluator {
+	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
-		for (auto& snake : state.state.getSnakes())
-			mindmap.insert({snake.getSquad(), mind});
-			//mindmap[snake.getSquad()] = mind;
+		for (auto& squad : state.state.getLivingSquads())
+			mindmap.insert({squad, StateOfMind(squad)});
 		return Evaluator(state.getGamemode(), state.getNumPlayers(), state.getWidth(), state.getHeight(), mindmap);
 	};
 	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10, .timeout = info.timeout-50});

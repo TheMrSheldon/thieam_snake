@@ -31,11 +31,7 @@ public:
 		return state.getHeight();
 	}
 	size_t getNumParties() const noexcept {
-		std::set<ls::SnakeFlags> squads;
-		for (const auto& snake : state.getSnakes())
-			if (!snake.isDead())
-				squads.insert(snake.getSquad());
-		return squads.size();
+		return state.getLivingSquads().size();
 	}
 	size_t getNumPlayers() const noexcept {
 		return state.getNumSnakes();
