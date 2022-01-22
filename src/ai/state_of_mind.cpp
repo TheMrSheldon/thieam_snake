@@ -21,10 +21,10 @@ float StateOfMind::getRating(const ls::State& state, Evaluation& eval) const noe
 	if (eval.winner != ls::SnakeFlags::None) {
 		if (eval.winner.containsAll(squad)) {
 			if (eval.winner == squad)
-				return 100 + depth_delta; //win (prefer early wins)
-			return -50; //tie
+				return 1000 + depth_delta; //win (prefer early wins)
+			return -750; //tie
 		} else
-			return -100 - depth_delta; //loss (prefer late losses)
+			return -1000 - depth_delta; //loss (prefer late losses)
 	}
 
 	// Calculate minimum health

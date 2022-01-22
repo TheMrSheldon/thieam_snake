@@ -79,10 +79,10 @@ float Evaluator::evaluate(const State& state, unsigned depth) noexcept {
 	//Two possible variants (don't know, which one is better)
 	// The leaf's value is the rating of the local Player's party (with a negative sign if
 	// its not their turn)
-	const auto& maxParty = state.state.getSnake(0).getSquad();
-	const auto sign = (state.getCurrentParty() == maxParty)? 1:-1;
-	const auto rating = mind.find(maxParty)->second.getRating(state.state, eval);
-	return sign*rating;
+	// const auto& maxParty = state.state.getSnake(0).getSquad();
+	// const auto sign = (state.getCurrentParty() == maxParty)? 1:-1;
+	// const auto rating = mind.find(maxParty)->second.getRating(state.state, eval);
+	// return sign*rating;
 	// The leaf's value is the rating of the party whose turn it is currently
-	//return mind.find(state.getCurrentParty())->second.getRating(state.state, eval);
+	return mind.find(state.getCurrentParty())->second.getRating(state.state, eval);
 }

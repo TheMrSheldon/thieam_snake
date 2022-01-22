@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <map>
+#include <iostream>
 
 struct SearchSettings {
 	unsigned initialDepth;
@@ -25,7 +26,7 @@ private:
 	}
 
 	float iterativeDeepening(const State& state, Evaluator& evaluator) const {
-		return -minimax(state, getTargetDepth(state.getNumPlayers())-1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), evaluator);
+		return minimax(state, getTargetDepth(state.getNumPlayers())-1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), evaluator);
 	}
 	static float minimax(const State& state, unsigned depth, float alpha, float beta, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
@@ -68,15 +69,22 @@ public:
 		Evaluator eval = std::move(createEvaluator(state));
 
 		if (state.getNumParties() == 2) {
+			std::cout << "=====" << std::endl;
 			float best_score = -std::numeric_limits<float>::infinity();
 			Move best;
 			for (const auto& action : state.getValidActions()) {
 				auto next = state.afterMove(action);
-				auto score = iterativeDeepening(next, eval);
+				float score;
+				if (state.getCurrentParty() != next.getCurrentParty())
+					score = -iterativeDeepening(next, eval);
+				else
+					score = iterativeDeepening(next, eval);
+				//auto score = iterativeDeepening(next, eval);
 				if (score >= best_score) {
 					best = action;
 					best_score = score;
 				}
+				std::cout << action.isUp() << action.isDown() << action.isLeft() << action.isRight() << " " << score << std::endl;
 			}
 			return best;
 		} else {
