@@ -12,6 +12,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+#define TESTING
 #include <ai/eval.h>
 #include <ai/search.h>
 #include <ai/state_of_mind.h>
@@ -325,4 +326,5 @@ TEST_CASE("Scenario 8", "[Scenario]") {
     Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
     auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
     CHECK(move.isUp());
+	
 }

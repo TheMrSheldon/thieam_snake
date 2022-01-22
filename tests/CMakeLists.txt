@@ -5,7 +5,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(catch)
 
-add_executable(tests main.cpp eval.cpp "../src/agents/robin.cpp" "../src/ai/eval.cpp" "../src/ai/state_of_mind.cpp")
+add_executable(tests main.cpp eval.cpp search.cpp "../src/agents/robin.cpp" "../src/ai/eval.cpp" "../src/ai/state_of_mind.cpp")
 add_executable(scenario_tests scenarios.cpp "../src/agents/robin.cpp" "../src/ai/eval.cpp" "../src/ai/state_of_mind.cpp")
 
 target_link_libraries(tests PRIVATE Catch2::Catch2 libsnake)

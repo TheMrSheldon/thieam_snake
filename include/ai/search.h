@@ -13,7 +13,11 @@ struct SearchSettings {
 //TODO: implement iterative deepening
 template<typename State, typename Move, typename Evaluator, typename Party>
 class Search final {
+#ifdef TESTING
+public:
+#else
 private:
+#endif
 	const SearchSettings settings;
 
 	unsigned getTargetDepth(size_t playerCount) const noexcept {
