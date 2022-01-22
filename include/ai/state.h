@@ -5,9 +5,10 @@
 #include <libsnake/gamemode.h>
 #include <libsnake/gamemodes/standard.h>
 
+#include <algorithm>
 #include <iostream>
 #include <set>
-#include <vector>
+#include <numeric>
 
 class State {
 	using LState = ls::State;
@@ -34,7 +35,9 @@ public:
 		return state.getLivingSquads().size();
 	}
 	size_t getNumPlayers() const noexcept {
-		return state.getNumSnakes();
+		//return state.getNumSnakes();
+		const auto& squads = state.getLivingSquads();
+		return std::accumulate(squads.begin(), squads.end(), 0, [](int left, const ls::SnakeFlags& right){ return left+right.size(); });
 	}
 
 	ls::SnakeFlags getCurrentParty() const noexcept {

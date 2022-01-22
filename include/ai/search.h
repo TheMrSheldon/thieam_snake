@@ -1,9 +1,7 @@
 #pragma once
 
-//#include <functional>
 #include <limits>
 #include <map>
-//#include <type_traits>
 
 struct SearchSettings {
 	unsigned initialDepth;
@@ -23,7 +21,7 @@ private:
 	}
 
 	float iterativeDeepening(const State& state, Evaluator& evaluator) const {
-		return -minimax(state, getTargetDepth(state.getNumParties())-1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), evaluator);
+		return -minimax(state, getTargetDepth(state.getNumPlayers())-1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), evaluator);
 	}
 	static float minimax(const State& state, unsigned depth, float alpha, float beta, Evaluator& evaluator) {
 		if (state.isGameOver() || depth==0)
@@ -83,7 +81,7 @@ public:
 			Move best;
 			for (const auto& action : state.getValidActions()) {
 				auto next = state.afterMove(action);
-				auto score = maxN(state, getTargetDepth(state.getNumParties())-1, eval)[party];
+				auto score = maxN(state, getTargetDepth(state.getNumPlayers())-1, eval)[party];
 				if (score >= best_score) {
 					best = action;
 					best_score = score;
