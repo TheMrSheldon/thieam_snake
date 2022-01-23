@@ -347,7 +347,11 @@ TEST_CASE("Scenario 9", "[Scenario]") {
 	 * Squad 1: snake 1, 2
 	 * Squad 2: snake 3, 4
 	 */
-	const ls::Gamemode& gamemode = ls::gm::Squad;
+	auto gamemode = ls::gm::SquadGamemode();
+	gamemode.setAllowBodyCollisions(true);
+	gamemode.setSharedElimination(true);
+	gamemode.setSharedHealth(true);
+	gamemode.setSharedLength(true);
     constexpr auto infty = std::numeric_limits<float>::infinity();
     std::vector<ls::Position> snake1 = {{1,0},{2,0},{3,0},{4,0},{5,0}};
     std::vector<ls::Position> snake2 = {{1,2},{2,2},{2,3},{2,4},{2,5}};
@@ -375,4 +379,16 @@ TEST_CASE("Scenario 9", "[Scenario]") {
     Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
 	auto score = search.minimax(State(gamemode, state), 8, -infty, infty, eval);
 	CHECK(score >= 1000); //This is a winning state
+
+	{
+		auto nstate = State(gamemode, state).afterMove(ls::Move::left)
+				.afterMove(ls::Move::left)
+				.afterMove(ls::Move::left)
+				.afterMove(ls::Move::left);
+		CHECK(nstate.isGameOver());
+		auto scores = eval.evaluateAll(nstate, 4);
+
+		CHECK(scores[ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2] >= 1000);
+		CHECK(scores[ls::SnakeFlags::Player3 | ls::SnakeFlags::Player4] <= 1000);
+	}
 }

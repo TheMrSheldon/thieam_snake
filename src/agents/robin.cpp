@@ -22,9 +22,6 @@ ls::Move Robin::getAction(const GameInfo& info, uint32_t turn, ls::State& state)
 	//else
 	//	mind.setTarget(StateOfMind::Target::Control);
 	//
-	for (auto& snake : state.getSnakes()) {
-		std::cout << snake.getHeadPos() << snake.getSquad() << '\n';
-	}
 	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
 		for (auto& squad : state.state.getLivingSquads())

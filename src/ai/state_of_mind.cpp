@@ -1,6 +1,7 @@
 #include <ai/state_of_mind.h>
 
 #include <ai/eval.h>
+#include <iostream>
 
 StateOfMind::StateOfMind(ls::SnakeFlags squad) noexcept : squad(squad) {}
 

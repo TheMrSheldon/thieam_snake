@@ -2,7 +2,6 @@
 
 #include <limits>
 #include <map>
-#include <iostream>
 
 struct SearchSettings {
 	unsigned initialDepth;
@@ -69,7 +68,6 @@ public:
 		Evaluator eval = std::move(createEvaluator(state));
 
 		if (state.getNumParties() == 2) {
-			std::cout << "=====" << std::endl;
 			float best_score = -std::numeric_limits<float>::infinity();
 			Move best;
 			for (const auto& action : state.getValidActions()) {
@@ -84,7 +82,6 @@ public:
 					best = action;
 					best_score = score;
 				}
-				std::cout << action.isUp() << action.isDown() << action.isLeft() << action.isRight() << " " << score << std::endl;
 			}
 			return best;
 		} else {
