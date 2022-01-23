@@ -15,8 +15,8 @@ namespace rest::dto {
 		DTO_FIELD(String, name);
 		DTO_FIELD(Int32, health);
 		DTO_FIELD(Vector<Object<Position>>, body);
-		DTO_FIELD(String, latency);
-		DTO_FIELD(Object<Position>, head);
+		//DTO_FIELD(String, latency);
+		//DTO_FIELD(Object<Position>, head);
 		DTO_FIELD(Int32, length);
 		DTO_FIELD(String, shout);
 		DTO_FIELD(String, squad);
