@@ -463,7 +463,7 @@ TEST_CASE("Scenario 11", "[Scenario]") {
 	auto s1 = ls::Snake(std::move(snake1), 92, ls::SnakeFlags::Player1);
 	auto s2 = ls::Snake(std::move(snake2), 98, ls::SnakeFlags::Player2);
 	auto s3 = ls::Snake(std::move(snake3), 99, ls::SnakeFlags::Player3);
-	auto s4 = ls::Snake(std::move(snake3), 94, ls::SnakeFlags::Player4);
+	auto s4 = ls::Snake(std::move(snake4), 94, ls::SnakeFlags::Player4);
 	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
 	
     CHECK(state.getSnake(0).getDirection().isDown());
