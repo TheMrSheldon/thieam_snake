@@ -31,6 +31,8 @@ float StateOfMind::getRating(const ls::State& state, Evaluation& eval) const noe
 		return -1000 + depth_delta; //loss (prefer late losses)
 
 	// Calculate minimum health
+	const int squadWeight = 10;
+	int squadCount = state.getLivingSquads().size();
 	int minSquadHealth = 100;
 	int minOpponentHealth = 100;
 	unsigned totSquadControl = 0;
@@ -44,5 +46,6 @@ float StateOfMind::getRating(const ls::State& state, Evaluation& eval) const noe
 			totOpponentControl += eval.snakes[snake].mobility;
 	}
 	return .2f*relEval((float)minSquadHealth, (float)minOpponentHealth)
-		+ 5*relEval((float)totSquadControl, (float)totOpponentControl);
+		+ 5*relEval((float)totSquadControl, (float)totOpponentControl)
+		- squadCount * squadWeight;
 }
