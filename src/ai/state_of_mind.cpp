@@ -18,15 +18,17 @@ static inline float relEval(float player, float opponent) noexcept {
 }
 
 float StateOfMind::getRating(const ls::State& state, Evaluation& eval) const noexcept {
-	float depth_delta = 1.0f / (eval.depth + 1);
+	float depth_delta = 1-(1.0f / (eval.depth + 1));
 	if (eval.winner != ls::SnakeFlags::None) {
 		if (eval.winner.containsAll(squad)) {
 			if (eval.winner == squad)
-				return 1000 - depth_delta; //win (prefer early wins)
+				return 1000 + depth_delta; //win (prefer early wins)
 			return -750; //tie
 		} else
-			return -1000 + depth_delta; //loss (prefer late losses)
+			return -1000 - depth_delta; //loss (prefer late losses)
 	}
+	if (!state.getLivingSquads().contains(squad))
+		return -1000 + depth_delta; //loss (prefer late losses)
 
 	// Calculate minimum health
 	int minSquadHealth = 100;
