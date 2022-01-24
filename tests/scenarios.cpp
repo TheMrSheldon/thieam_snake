@@ -436,3 +436,49 @@ TEST_CASE("Scenario 10", "[Scenario]") {
 	auto score = Search::maxN(State(gamemode, state).afterMove(ls::Move::right), 3, eval);
 	CHECK(score[ls::SnakeFlags::Player1] <= -1000); //Moving right is a losing move
 }
+
+TEST_CASE("Scenario 11", "[Scenario]") {
+	/**
+	 * ╔═══════════════════════╗	Snake 1:	<11
+	 * ║ . . . . . . . . o . . ║	Snake 2:	<22
+	 * ║ . . . . . . . . . . . ║	Snake 3:	<33
+	 * ║ . . ^ 4 . . . . . . . ║	Snake 4:	<44
+	 * ║ . . 4 4 . . . . . . . ║	Food:		o
+	 * ║ . . . . . . 2 2 . 1 1 ║	Empty:		.
+	 * ║ . . . . . o 2 > . v . ║
+	 * ║ . . . . . . . . . . . ║
+	 * ║ . 3 3 > . . . . . . . ║
+	 * ║ . 3 . . . . . . . . . ║
+	 * ║ . 3 . . . . . . . . . ║
+	 * ║ . . . . . . . . o . . ║
+	 * ╚═══════════════════════╝
+	 */
+	const auto& gamemode = ls::gm::Standard;
+    constexpr auto infty = std::numeric_limits<float>::infinity();
+    std::vector<ls::Position> snake1 = {{10,4},{9,4},{9,5}};
+	std::vector<ls::Position> snake2 = {{7,4},{6,4},{6,5},{7,5}};
+	std::vector<ls::Position> snake3 = {{1,9},{1,8},{1,7},{2,7},{3,7}};
+	std::vector<ls::Position> snake4 = {{3,2},{3,3},{2,3},{2,2}};
+	std::vector<ls::Position> food = {{5,5},{8,0},{8,10}};
+	auto s1 = ls::Snake(std::move(snake1), 92, ls::SnakeFlags::Player1);
+	auto s2 = ls::Snake(std::move(snake2), 98, ls::SnakeFlags::Player2);
+	auto s3 = ls::Snake(std::move(snake3), 99, ls::SnakeFlags::Player3);
+	auto s4 = ls::Snake(std::move(snake3), 94, ls::SnakeFlags::Player4);
+	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
+	
+    CHECK(state.getSnake(0).getDirection().isDown());
+    CHECK(state.getSnake(1).getDirection().isRight());
+    CHECK(state.getSnake(2).getDirection().isRight());
+	CHECK(state.getSnake(3).getDirection().isUp());
+    CHECK(state.getNumSnakes() == 4);
+    CHECK(state.getLivingSquads().size() == 4);
+	
+    std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	for (auto& squad : state.getLivingSquads())
+		mindmap.insert({squad, StateOfMind(squad)});
+	Evaluator eval(gamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
+
+	using Search = Search<State, ls::Move, Evaluator, ls::SnakeFlags>;
+	auto score = Search::maxN(State(gamemode, state).afterMove(ls::Move::left), 4, eval);
+	CHECK(score[ls::SnakeFlags::Player1] <= -1000); //Moving left is a losing move
+}
