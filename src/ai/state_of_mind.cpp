@@ -41,9 +41,10 @@ float StateOfMind::getRating(const ls::State& state, Evaluation& eval) const noe
 		if (squad.containsAll(ls::SnakeFlags::ByIndex(snake))) {
 			minSquadHealth = std::min(minSquadHealth, state.getSnake(snake).getHealth());
 			totSquadControl += eval.snakes[snake].mobility;
-		} else
+		} else {
 			minOpponentHealth = std::min(minOpponentHealth, state.getSnake(snake).getHealth());
 			totOpponentControl += eval.snakes[snake].mobility;
+		}
 	}
 	return .2f*relEval((float)minSquadHealth, (float)minOpponentHealth)
 		+ 5*relEval((float)totSquadControl, (float)totOpponentControl)
