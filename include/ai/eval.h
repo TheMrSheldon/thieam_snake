@@ -86,8 +86,16 @@ public:
 			//If another snake wants to check if the field is blocked at this time but would reach the field
 			//at the same time as the snake who previously claimed it (turn == entry.timeBlocked) then this
 			//is a border-tile and thus is counted as "unblocked" for the longer snake.
-			return turn > entry.timeBlocked.turn || state.getSnake(entry.snake.getIndex()).length() > state.getSnake(snake).length();
-			//FIXME: entry.snake.getIndex() may throw an error if more than two snakes could occupy the field
+			if (turn > entry.timeBlocked.turn)
+				return true;
+			for (size_t snakeIdx = 0; snakeIdx < state.getNumSnakes(); ++snakeIdx) {
+				if (entry.snake.containsAll(ls::SnakeFlags::ByIndex(snakeIdx))) {
+					const auto& blockingSnake = state.getSnake(snakeIdx);
+					if (blockingSnake.length() > state.getSnake(snake).length())
+						return true;
+				}
+			}
+			return false;
 		}
 	}
 	inline void blockAfterTurn(const ls::Position& pos, size_t snake, size_t turn) noexcept {
