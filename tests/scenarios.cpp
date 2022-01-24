@@ -455,11 +455,11 @@ TEST_CASE("Scenario 11", "[Scenario]") {
 	 */
 	const auto& gamemode = ls::gm::Standard;
     constexpr auto infty = std::numeric_limits<float>::infinity();
-    std::vector<ls::Position> snake1 = {{10,4},{9,4},{9,5}};
-	std::vector<ls::Position> snake2 = {{7,4},{6,4},{6,5},{7,5}};
-	std::vector<ls::Position> snake3 = {{1,9},{1,8},{1,7},{2,7},{3,7}};
-	std::vector<ls::Position> snake4 = {{3,2},{3,3},{2,3},{2,2}};
-	std::vector<ls::Position> food = {{5,5},{8,0},{8,10}};
+    std::vector<ls::Position> snake1 = {{9,5},{9,6},{10,6}};
+	std::vector<ls::Position> snake2 = {{7,5},{6,5},{6,6},{7,6}};
+	std::vector<ls::Position> snake3 = {{3,3},{2,3},{1,3},{1,2},{1,1}};
+	std::vector<ls::Position> snake4 = {{2,8},{2,7},{3,7},{3,8}};
+	std::vector<ls::Position> food = {{5,5},{8,10},{8,0}};
 	auto s1 = ls::Snake(std::move(snake1), 92, ls::SnakeFlags::Player1);
 	auto s2 = ls::Snake(std::move(snake2), 98, ls::SnakeFlags::Player2);
 	auto s3 = ls::Snake(std::move(snake3), 99, ls::SnakeFlags::Player3);
