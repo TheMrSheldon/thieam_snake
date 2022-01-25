@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <deque>
 
-Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept
+Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const std::map<ls::SnakeFlags, StateOfMind>& mind) noexcept
 	: gamemode(gamemode),  mind(mind), envbuffer(numSnakes, width, height) {}
 
 Evaluator::Evaluator(Evaluator&& other) noexcept : gamemode(other.gamemode), mind(other.mind), envbuffer(std::move(other.envbuffer)) {}
@@ -20,13 +20,13 @@ Evaluation Evaluator::evaluate(const ls::State& state, unsigned depth) noexcept 
 				.choice = gamemode.getUnblockedActions(state, 0).size()
 			});
 		}
-		scanProximity(state, result);
+		scanProximity(state, depth, result);
 	}
 	return result;
 }
 
 UNROLL
-void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexcept {
+void Evaluator::scanProximity(const ls::State& state, unsigned depth, Evaluation& results) noexcept {
 	struct PosStr {
 		ls::Position pos;
 		size_t snake;
@@ -63,9 +63,26 @@ void Evaluator::scanProximity(const ls::State& state, Evaluation& results) noexc
 		results.snakes[snake].mobility_per_area = envbuffer.getAreaControl(snake)/(float)(state.getWidth()*state.getHeight());
 		results.snakes[snake].foodInReach = (unsigned)foodReached[snake];
 	}
+	results.depth = depth;
+}
+
+std::map<ls::SnakeFlags, float> Evaluator::evaluateAll(const State& state, unsigned depth) noexcept {
+	auto eval = evaluate(state.state, depth);
+	std::map<ls::SnakeFlags, float> ret;
+	for (auto& entry : mind)
+		ret[entry.first] = entry.second.getRating(state.state, eval);
+	return std::move(ret);
 }
 
 float Evaluator::evaluate(const State& state, unsigned depth) noexcept {
-    auto eval = evaluate(state.state, depth);
-	return mind.getRating(state.state, eval);
+	auto eval = evaluate(state.state, depth);
+	//Two possible variants (don't know, which one is better)
+	// The leaf's value is the rating of the local Player's party (with a negative sign if
+	// its not their turn)
+	// const auto& maxParty = state.state.getSnake(0).getSquad();
+	// const auto sign = (state.getCurrentParty() == maxParty)? 1:-1;
+	// const auto rating = mind.find(maxParty)->second.getRating(state.state, eval);
+	// return sign*rating;
+	// The leaf's value is the rating of the party whose turn it is currently
+	return mind.find(state.getCurrentParty())->second.getRating(state.state, eval);
 }

@@ -31,9 +31,7 @@ namespace rest {
 		 * @param agent - the agent used to answer the queries.
 		 * @param objectMapper - default object mapper used to serialize/deserialize DTOs.
 		 */
-		Controller(Agent& agent, OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)) : oatpp::web::server::api::ApiController(objectMapper), agent(agent) {
-			ASSERT(((oatpp::parser::json::mapping::ObjectMapper&)*objectMapper).getDeserializer()->getConfig()->allowUnknownFields, "We want to allow unknown json fields");
-		}
+		Controller(Agent& agent, OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)) : oatpp::web::server::api::ApiController(objectMapper), agent(agent) {}
 	public:
 		ENDPOINT("GET", "/", root) {
 			auto dto = rest::dto::SnakeInfo::createShared();

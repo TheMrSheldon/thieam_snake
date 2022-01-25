@@ -32,8 +32,11 @@ namespace rest {
 		
 		/** Create ObjectMapper component to serialize/deserialize DTOs in Contoller's API */
 		OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper)([] {
-			auto mapper = oatpp::parser::json::mapping::ObjectMapper::createShared();
-			mapper->getDeserializer()->getConfig()->allowUnknownFields = true;
+			auto serializeConfig = oatpp::parser::json::mapping::Serializer::Config::createShared();
+			auto deserializeConfig = oatpp::parser::json::mapping::Deserializer::Config::createShared();
+			deserializeConfig->allowUnknownFields = true;
+			auto mapper = oatpp::parser::json::mapping::ObjectMapper::createShared(serializeConfig, deserializeConfig);
+			//mapper->getDeserializer()->getConfig()->allowUnknownFields = true;
 			//mapper->getDeserializer()->getConfig()->enabledInterpretations = true;
 			return mapper;
 		}());

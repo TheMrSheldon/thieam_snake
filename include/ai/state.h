@@ -5,9 +5,10 @@
 #include <libsnake/gamemode.h>
 #include <libsnake/gamemodes/standard.h>
 
+#include <algorithm>
 #include <iostream>
-#include <bitset>
-#include <vector>
+#include <set>
+#include <numeric>
 
 class State {
 	using LState = ls::State;
@@ -30,10 +31,18 @@ public:
 	unsigned getHeight() const noexcept {
 		return state.getHeight();
 	}
+	size_t getNumParties() const noexcept {
+		return state.getLivingSquads().size();
+	}
 	size_t getNumPlayers() const noexcept {
-		return state.getNumSnakes();
+		//return state.getNumSnakes();
+		const auto& squads = state.getLivingSquads();
+		return std::accumulate(squads.begin(), squads.end(), 0, [](int left, const ls::SnakeFlags& right){ return left+right.size(); });
 	}
 
+	ls::SnakeFlags getCurrentParty() const noexcept {
+		return state.getSnake(getTurn()).getSquad();
+	}
 	size_t getTurn() const noexcept {
 		return moves.size();
 	}
@@ -52,6 +61,9 @@ public:
 	State afterMove(ls::Move action) const noexcept {
 		std::vector<ls::Move> newMoves(moves.begin(), moves.end());
 		newMoves.emplace_back(action);
+		//Dead snakes make no moves
+		while (newMoves.size() < state.getSnakes().size() && state.getSnake(newMoves.size()).isDead())
+			newMoves.emplace_back(ls::Move::none);
 		if (newMoves.size() == state.getNumSnakes())
 			return State(gamemode, gamemode.stepState(state, newMoves));
 		return State(gamemode, state, std::move(newMoves));

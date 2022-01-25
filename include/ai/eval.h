@@ -9,6 +9,7 @@
 
 #include <cstring>
 #include <inttypes.h>
+#include <map>
 #include <vector>
 
 struct SnakeEval final {
@@ -22,6 +23,7 @@ struct SnakeEval final {
 struct Evaluation final {
 	ls::SnakeFlags winner;
 	std::vector<SnakeEval> snakes;
+	unsigned depth;
 };
 
 class EnvBuffer final {
@@ -83,9 +85,17 @@ public:
 			}
 			//If another snake wants to check if the field is blocked at this time but would reach the field
 			//at the same time as the snake who previously claimed it (turn == entry.timeBlocked) then this
-			//is a border-tile and thus is counted as "unblocked" for both snakes.
-			return turn > entry.timeBlocked.turn || state.getSnake(entry.snake.getIndex()).length() > state.getSnake(snake).length();
-			//FIXME: entry.snake.getIndex() may throw an error if more than two snakes could occupy the field
+			//is a border-tile and thus is counted as "unblocked" for the longer snake.
+			if (turn > entry.timeBlocked.turn)
+				return true;
+			for (size_t snakeIdx = 0; snakeIdx < state.getNumSnakes(); ++snakeIdx) {
+				if (entry.snake.containsAll(ls::SnakeFlags::ByIndex(snakeIdx))) {
+					const auto& blockingSnake = state.getSnake(snakeIdx);
+					if (blockingSnake.length() > state.getSnake(snake).length())
+						return true;
+				}
+			}
+			return false;
 		}
 	}
 	inline void blockAfterTurn(const ls::Position& pos, size_t snake, size_t turn) noexcept {
@@ -128,19 +138,20 @@ public:
 class Evaluator final {
 private:
 	const ls::Gamemode& gamemode;
-	const StateOfMind& mind;
+	const std::map<ls::SnakeFlags, StateOfMind> mind;
 	EnvBuffer envbuffer;
 
-	inline void scanProximity(const ls::State& state, Evaluation& results) noexcept;
+	inline void scanProximity(const ls::State& state, unsigned depth, Evaluation& results) noexcept;
 
 	Evaluator(const Evaluator& other) = delete;
 	Evaluator& operator=(const Evaluator& other) = delete;
 public:
-	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const StateOfMind& mind) noexcept;
+	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const std::map<ls::SnakeFlags, StateOfMind>& mind) noexcept;
 	Evaluator(Evaluator&& other) noexcept;
 
 	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }
-
+	
 	Evaluation evaluate(const ls::State& state, unsigned depth) noexcept;
 	float evaluate(const State& state, unsigned depth) noexcept;
+	std::map<ls::SnakeFlags, float> evaluateAll(const State& state, unsigned depth) noexcept;
 };

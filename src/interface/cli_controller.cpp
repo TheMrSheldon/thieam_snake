@@ -227,7 +227,11 @@ static ls::State _InputGameState(std::ostream& out) {
 static void EvalCmd(std::ostream& out) {
 	const auto state = _InputGameState(out);
 	StateOfMind mind(0);
-	Evaluator eval(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mind);
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	for (auto& snake : state.getSnakes())
+		mindmap.insert({snake.getSquad(), mind});
+	
+	Evaluator eval(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	const auto e = eval.evaluate(state, 1);
 	out << "Evaluating state\n";
 	out << state << "\n";
@@ -257,23 +261,23 @@ static void EvalCmd(std::ostream& out) {
 
 CLIController::CLIController() noexcept : rootMenu(std::make_unique<cli::Menu>("thieam")) {
 	cli::SetColor();
-    rootMenu->Insert(
+	rootMenu->Insert(
 		"color",
 		[](std::ostream& out){ out << "Colors ON\n"; cli::SetColor(); },
 		"Enable colors in the cli");
-    rootMenu->Insert(
+	rootMenu->Insert(
 		"nocolor",
 		[](std::ostream& out){ out << "Colors OFF\n"; cli::SetNoColor(); },
 		"Disable colors in the cli");
 
-    auto diagMenu = std::make_unique<cli::Menu>("diagnostic");
-    diagMenu->Insert(
+	auto diagMenu = std::make_unique<cli::Menu>("diagnostic");
+	diagMenu->Insert(
 		"start-explaining",
 		[](std::ostream& out){
 			out << rang::fg::red << "Not yet implemented\n" << rang::fg::reset; //TODO: implement
 		},
 		"Start explaining the chosen move");
-    diagMenu->Insert(
+	diagMenu->Insert(
 		"stop-explaining",
 		[](std::ostream& out){
 			out << rang::fg::red << "Not yet implemented\n" << rang::fg::reset; //TODO: implement
@@ -281,7 +285,7 @@ CLIController::CLIController() noexcept : rootMenu(std::make_unique<cli::Menu>("
 		"Stop explaining the chosen move");
 	diagMenu->Insert("eval", [](std::ostream& out){ EvalCmd(out); }, "Evaluate a specified gamestate");
 	
-    rootMenu->Insert(std::move(diagMenu));
+	rootMenu->Insert(std::move(diagMenu));
 }
 
 void CLIController::Run() noexcept {
