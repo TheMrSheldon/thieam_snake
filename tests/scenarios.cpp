@@ -39,26 +39,26 @@ TEST_CASE("Scenario 1", "[Scenario]") {
 	 * ║ o . . . 1 1 1 1 1 1 o ║
 	 * ╚═══════════════════════╝
 	 */
-    std::vector<ls::Position> snake1 = {{9,1},{9,0},{8,0},{7,0},{6,0},{5,0},{4,0},{4,1},{5,1},{5,2},{4,2},{4,3},{4,4},{4,5},{4,6},{5,6},{6,6},{6,5},{5,5}};
+	std::vector<ls::Position> snake1 = {{9,1},{9,0},{8,0},{7,0},{6,0},{5,0},{4,0},{4,1},{5,1},{5,2},{4,2},{4,3},{4,4},{4,5},{4,6},{5,6},{6,6},{6,5},{5,5}};
 	std::vector<ls::Position> snake2 = {{10,2},{9,2},{8,2},{8,3},{8,4},{8,5},{8,6},{9,6},{9,7},{8,7},{8,8},{8,9},{7,10}};
 	std::vector<ls::Position> food = {{0,0},{10,0},{1,1},{3,1},{0,2},{0,4},{0,5},{0,6},{0,7},{2,7},{0,8},{4,8},{5,9},{9,9},{0,10},{4,10},{6,10},{9,10},{10,0}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
 	auto state = ls::State(11,11, {s1, s2}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isUp());
-    CHECK(state.getSnake(1).getDirection().isRight());
-    CHECK(state.getLivingSquads().size() == 2);
-
-    const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
+	CHECK(state.getSnake(0).getDirection().isUp());
+	CHECK(state.getSnake(1).getDirection().isRight());
+	CHECK(state.getLivingSquads().size() == 2);
+	
+	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
 		for (auto& squad : state.state.getLivingSquads())
 			mindmap.insert({squad, StateOfMind(squad)});
 		return Evaluator(state.getGamemode(), state.state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	};
-    Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
-    auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
-    CHECK(move.isLeft());
+	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
+	auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
+	CHECK(move.isLeft());
 }
 
 TEST_CASE("Scenario 1 -- swapped", "[Scenario]") {
@@ -77,26 +77,26 @@ TEST_CASE("Scenario 1 -- swapped", "[Scenario]") {
 	 * ║ o . . . 1 1 1 1 1 1 o ║
 	 * ╚═══════════════════════╝
 	 */
-    std::vector<ls::Position> snake1 = {{10,2},{9,2},{8,2},{8,3},{8,4},{8,5},{8,6},{9,6},{9,7},{8,7},{8,8},{8,9},{7,10}};
+	std::vector<ls::Position> snake1 = {{10,2},{9,2},{8,2},{8,3},{8,4},{8,5},{8,6},{9,6},{9,7},{8,7},{8,8},{8,9},{7,10}};
 	std::vector<ls::Position> snake2 = {{9,1},{9,0},{8,0},{7,0},{6,0},{5,0},{4,0},{4,1},{5,1},{5,2},{4,2},{4,3},{4,4},{4,5},{4,6},{5,6},{6,6},{6,5},{5,5}};
 	std::vector<ls::Position> food = {{0,0},{10,0},{1,1},{3,1},{0,2},{0,4},{0,5},{0,6},{0,7},{2,7},{0,8},{4,8},{5,9},{9,9},{0,10},{4,10},{6,10},{9,10},{10,0}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
 	auto state = ls::State(11,11, {s1, s2}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isRight());
-    CHECK(state.getSnake(1).getDirection().isUp());
-    CHECK(state.getLivingSquads().size() == 2);
-
-    const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
+	CHECK(state.getSnake(0).getDirection().isRight());
+	CHECK(state.getSnake(1).getDirection().isUp());
+	CHECK(state.getLivingSquads().size() == 2);
+	
+	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
 		for (auto& squad : state.state.getLivingSquads())
 			mindmap.insert({squad, StateOfMind(squad)});
 		return Evaluator(state.getGamemode(), state.state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	};
-    Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
-    auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
-    CHECK(move.isUp());
+	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
+	auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
+	CHECK(move.isUp());
 }
 
 TEST_CASE("Scenario 2", "[Scenario]") {
@@ -115,26 +115,26 @@ TEST_CASE("Scenario 2", "[Scenario]") {
 	 * ║ o . . . . . . . o . . ║
 	 * ╚═══════════════════════╝
 	 */
-    std::vector<ls::Position> snake1 = {{4,10},{4,9},{4,8},{4,7},{4,6},{5,6},{5,5}};
+	std::vector<ls::Position> snake1 = {{4,10},{4,9},{4,8},{4,7},{4,6},{5,6},{5,5}};
 	std::vector<ls::Position> snake2 = {{3,9},{2,9},{1,9},{1,8},{0,8},{0,7},{1,7},{1,6},{1,5},{1,4},{1,3},{0,3},{0,2}};
 	std::vector<ls::Position> food = {{0,0},{0,8},{2,9},{2,10},{9,10},{10,2},{10,8},{10,9},{10,10}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
 	auto state = ls::State(11,11, {s1, s2}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isUp());
-    CHECK(state.getSnake(1).getDirection().isRight());
-    CHECK(state.getLivingSquads().size() == 2);
-
-    const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
+	CHECK(state.getSnake(0).getDirection().isUp());
+	CHECK(state.getSnake(1).getDirection().isRight());
+	CHECK(state.getLivingSquads().size() == 2);
+	
+	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
 		for (auto& squad : state.state.getLivingSquads())
 			mindmap.insert({squad, StateOfMind(squad)});
 		return Evaluator(state.getGamemode(), state.state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	};
-    Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
-    auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
-    CHECK(move.isRight());
+	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
+	auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
+	CHECK(move.isRight());
 }
 
 TEST_CASE("Scenario 2 -- swapped", "[Scenario]") {
@@ -153,26 +153,26 @@ TEST_CASE("Scenario 2 -- swapped", "[Scenario]") {
 	 * ║ o . . . . . . . o . . ║
 	 * ╚═══════════════════════╝
 	 */
-    std::vector<ls::Position> snake1 = {{3,9},{2,9},{1,9},{1,8},{0,8},{0,7},{1,7},{1,6},{1,5},{1,4},{1,3},{0,3},{0,2}};
+	std::vector<ls::Position> snake1 = {{3,9},{2,9},{1,9},{1,8},{0,8},{0,7},{1,7},{1,6},{1,5},{1,4},{1,3},{0,3},{0,2}};
 	std::vector<ls::Position> snake2 = {{4,10},{4,9},{4,8},{4,7},{4,6},{5,6},{5,5}};
 	std::vector<ls::Position> food = {{0,0},{0,8},{2,9},{2,10},{9,10},{10,2},{10,8},{10,9},{10,10}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
 	auto state = ls::State(11,11, {s1, s2}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isRight());
-    CHECK(state.getSnake(1).getDirection().isUp());
-    CHECK(state.getLivingSquads().size() == 2);
-
-    const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
+	CHECK(state.getSnake(0).getDirection().isRight());
+	CHECK(state.getSnake(1).getDirection().isUp());
+	CHECK(state.getLivingSquads().size() == 2);
+	
+	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
 		for (auto& squad : state.state.getLivingSquads())
 			mindmap.insert({squad, StateOfMind(squad)});
 		return Evaluator(state.getGamemode(), state.state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	};
-    Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
-    auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
-    CHECK(move.isDown());
+	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
+	auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
+	CHECK(move.isDown());
 }
 
 TEST_CASE("Scenario 3", "[Scenario]") {
@@ -267,7 +267,7 @@ TEST_CASE("Scenario 7", "[Scenario]") {
 	 * ║ . . . . . . . . . . . ║
 	 * ╚═══════════════════════╝
 	 */
-    //Bin gerade nicht mehr sicher, ob eine Bewegung nach oben tatsächlich das beste für 1 ist.
+	//Bin gerade nicht mehr sicher, ob eine Bewegung nach oben tatsächlich das beste für 1 ist.
 	//std::vector<ls::Position> snake1 = {{10,6},{9,6},{8,6}};
 	//std::vector<ls::Position> snake2 = {/*TODO*/};
 	//std::vector<ls::Position> food = {/*TODO*/};
@@ -275,19 +275,19 @@ TEST_CASE("Scenario 7", "[Scenario]") {
 	//auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
 	//auto state = ls::State(11,11, {s1, s2}, std::move(food));
 	//
-    //CHECK(state.getSnake(0).getDirection().isRight());
-    //CHECK(state.getSnake(1).getDirection().isRight());
-    //CHECK(state.getLivingSquads().size() == 2);
-    //
-    //const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
+	//CHECK(state.getSnake(0).getDirection().isRight());
+	//CHECK(state.getSnake(1).getDirection().isRight());
+	//CHECK(state.getLivingSquads().size() == 2);
+	//
+	//const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 	//	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	//	for (auto& squad : state.state.getLivingSquads())
 	//		mindmap.insert({squad, StateOfMind(squad)});
 	//	return Evaluator(state.getGamemode(), state.state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	//};
-    //Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
-    //auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
-    //CHECK(move.isUp());
+	//Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
+	//auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
+	//CHECK(move.isUp());
 }
 
 TEST_CASE("Scenario 8", "[Scenario]") {
@@ -306,28 +306,28 @@ TEST_CASE("Scenario 8", "[Scenario]") {
 	 * ║ . . . . . . . . . < 1 ║
 	 * ╚═══════════════════════╝
 	 */
-    std::vector<ls::Position> snake1 = {{9,0},{10,0},{10,1},{10,2},{10,3},{10,4}};
+	std::vector<ls::Position> snake1 = {{9,0},{10,0},{10,1},{10,2},{10,3},{10,4}};
 	std::vector<ls::Position> snake2 = {{6,1},{6,2},{7,2},{8,2},{8,3},{9,3},{9,2},{9,1}};
 	std::vector<ls::Position> food = {{2,3},{4,8},{4,9}};
 	auto s1 = ls::Snake(std::move(snake1), 80, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 98, ls::SnakeFlags::ByIndex(1));
 	auto state = ls::State(11,11, {s1, s2}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isLeft());
-    CHECK(state.getSnake(1).getDirection().isDown());
-    CHECK(state.getLivingSquads().size() == 2);
+	CHECK(state.getSnake(0).getDirection().isLeft());
+	CHECK(state.getSnake(1).getDirection().isDown());
+	CHECK(state.getLivingSquads().size() == 2);
 	CHECK((ls::gm::Standard.getUnblockedActions(state, 0)==(ls::Move::left | ls::Move::up)));
-    
-    const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
+	
+	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
 		for (auto& squad : state.state.getLivingSquads())
 			mindmap.insert({squad, StateOfMind(squad)});
 		return Evaluator(state.getGamemode(), state.state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	};
-    Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
-    auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
+	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
+	auto move = search.findBestMove(State(ls::gm::Standard, state), createEvaluatorCallback);
 	CHECK((ls::gm::Standard.getUnblockedActions(state, 0) == ls::Move::left | ls::Move::up));
-    CHECK(move.isUp());
+	CHECK(move.isUp());
 }
 
 TEST_CASE("Scenario 9", "[Scenario]") {
@@ -353,11 +353,11 @@ TEST_CASE("Scenario 9", "[Scenario]") {
 	gamemode.setSharedElimination(true);
 	gamemode.setSharedHealth(true);
 	gamemode.setSharedLength(true);
-    constexpr auto infty = std::numeric_limits<float>::infinity();
-    std::vector<ls::Position> snake1 = {{1,0},{2,0},{3,0},{4,0},{5,0}};
-    std::vector<ls::Position> snake2 = {{1,2},{2,2},{2,3},{2,4},{2,5}};
-    std::vector<ls::Position> snake3 = {{0,1},{1,1},{2,1},{3,1}};
-    std::vector<ls::Position> snake4 = {{8,5},{9,5},{10,5},{10,6}};
+	constexpr auto infty = std::numeric_limits<float>::infinity();
+	std::vector<ls::Position> snake1 = {{1,0},{2,0},{3,0},{4,0},{5,0}};
+	std::vector<ls::Position> snake2 = {{1,2},{2,2},{2,3},{2,4},{2,5}};
+	std::vector<ls::Position> snake3 = {{0,1},{1,1},{2,1},{3,1}};
+	std::vector<ls::Position> snake4 = {{8,5},{9,5},{10,5},{10,6}};
 	std::vector<ls::Position> food = {{2,3},{4,8},{4,9}};
 	auto s1 = ls::Snake(std::move(snake1), 90, ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2);
 	auto s2 = ls::Snake(std::move(snake2), 90, ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2);
@@ -365,19 +365,19 @@ TEST_CASE("Scenario 9", "[Scenario]") {
 	auto s4 = ls::Snake(std::move(snake4), 90, ls::SnakeFlags::Player3 | ls::SnakeFlags::Player4);
 	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isLeft());
-    CHECK(state.getSnake(1).getDirection().isLeft());
-    CHECK(state.getSnake(2).getDirection().isLeft());
-    CHECK(state.getSnake(3).getDirection().isLeft());
-    CHECK(state.getNumSnakes() == 4);
-    CHECK(state.getLivingSquads().size() == 2);
+	CHECK(state.getSnake(0).getDirection().isLeft());
+	CHECK(state.getSnake(1).getDirection().isLeft());
+	CHECK(state.getSnake(2).getDirection().isLeft());
+	CHECK(state.getSnake(3).getDirection().isLeft());
+	CHECK(state.getNumSnakes() == 4);
+	CHECK(state.getLivingSquads().size() == 2);
 	
-    std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	for (auto& squad : state.getLivingSquads())
 		mindmap.insert({squad, StateOfMind(squad)});
 	Evaluator eval(gamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
-
-    Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
+	
+	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10});
 	auto score = search.minimax(State(gamemode, state), 8, -infty, infty, eval);
 	CHECK(score >= 1000); //This is a winning state
 
@@ -411,23 +411,23 @@ TEST_CASE("Scenario 10", "[Scenario]") {
 	 * ╚═══════════════════════╝
 	 */
 	const auto& gamemode = ls::gm::Standard;
-    constexpr auto infty = std::numeric_limits<float>::infinity();
-    std::vector<ls::Position> snake1 = {{7,6},{6,6},{5,6},{5,5},{6,5},{7,5}};
-    std::vector<ls::Position> snake2 = {{8,5},{8,4},{8,3},{9,3},{9,4},{10,4},{10,5},{9,5},{9,6}};
-    std::vector<ls::Position> snake3 = {{3,4},{3,3},{4,3},{4,2},{5,2},{6,2},{7,2},{7,1},{8,1}};
+	constexpr auto infty = std::numeric_limits<float>::infinity();
+	std::vector<ls::Position> snake1 = {{7,6},{6,6},{5,6},{5,5},{6,5},{7,5}};
+	std::vector<ls::Position> snake2 = {{8,5},{8,4},{8,3},{9,3},{9,4},{10,4},{10,5},{9,5},{9,6}};
+	std::vector<ls::Position> snake3 = {{3,4},{3,3},{4,3},{4,2},{5,2},{6,2},{7,2},{7,1},{8,1}};
 	std::vector<ls::Position> food = {{2,0},{4,0},{7,8},{2,10}};
 	auto s1 = ls::Snake(std::move(snake1), 88, ls::SnakeFlags::Player1);
 	auto s2 = ls::Snake(std::move(snake2), 75, ls::SnakeFlags::Player2);
 	auto s3 = ls::Snake(std::move(snake3), 98, ls::SnakeFlags::Player3);
 	auto state = ls::State(11,11, {s1, s2, s3}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isRight());
-    CHECK(state.getSnake(1).getDirection().isUp());
-    CHECK(state.getSnake(2).getDirection().isUp());
-    CHECK(state.getNumSnakes() == 3);
-    CHECK(state.getLivingSquads().size() == 3);
+	CHECK(state.getSnake(0).getDirection().isRight());
+	CHECK(state.getSnake(1).getDirection().isUp());
+	CHECK(state.getSnake(2).getDirection().isUp());
+	CHECK(state.getNumSnakes() == 3);
+	CHECK(state.getLivingSquads().size() == 3);
 	
-    std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	for (auto& squad : state.getLivingSquads())
 		mindmap.insert({squad, StateOfMind(squad)});
 	Evaluator eval(gamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
@@ -454,8 +454,8 @@ TEST_CASE("Scenario 11", "[Scenario]") {
 	 * ╚═══════════════════════╝
 	 */
 	const auto& gamemode = ls::gm::Standard;
-    constexpr auto infty = std::numeric_limits<float>::infinity();
-    std::vector<ls::Position> snake1 = {{9,5},{9,6},{10,6}};
+	constexpr auto infty = std::numeric_limits<float>::infinity();
+	std::vector<ls::Position> snake1 = {{9,5},{9,6},{10,6}};
 	std::vector<ls::Position> snake2 = {{7,5},{6,5},{6,6},{7,6}};
 	std::vector<ls::Position> snake3 = {{3,3},{2,3},{1,3},{1,2},{1,1}};
 	std::vector<ls::Position> snake4 = {{2,8},{2,7},{3,7},{3,8}};
@@ -466,14 +466,14 @@ TEST_CASE("Scenario 11", "[Scenario]") {
 	auto s4 = ls::Snake(std::move(snake4), 94, ls::SnakeFlags::Player4);
 	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isDown());
-    CHECK(state.getSnake(1).getDirection().isRight());
-    CHECK(state.getSnake(2).getDirection().isRight());
+	CHECK(state.getSnake(0).getDirection().isDown());
+	CHECK(state.getSnake(1).getDirection().isRight());
+	CHECK(state.getSnake(2).getDirection().isRight());
 	CHECK(state.getSnake(3).getDirection().isUp());
-    CHECK(state.getNumSnakes() == 4);
-    CHECK(state.getLivingSquads().size() == 4);
+	CHECK(state.getNumSnakes() == 4);
+	CHECK(state.getLivingSquads().size() == 4);
 	
-    std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	for (auto& squad : state.getLivingSquads())
 		mindmap.insert({squad, StateOfMind(squad)});
 	Evaluator eval(gamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
@@ -500,7 +500,7 @@ TEST_CASE("Scenario 12", "[Scenario]") {
 	 * ╚═══════════════════════╝
 	 */
 	const auto& gamemode = ls::gm::Standard;
-    std::vector<ls::Position> snake1 = {{3,7},{4,7},{4,8}};
+	std::vector<ls::Position> snake1 = {{3,7},{4,7},{4,8}};
 	std::vector<ls::Position> snake2 = {{6,8},{7,8},{7,7},{7,6}};
 	std::vector<ls::Position> snake3 = {{1,7},{1,8},{0,8},{0,7},{0,6},{0,5}};
 	std::vector<ls::Position> snake4 = {{6,4},{6,3},{5,3},{5,4},{5,5}};
@@ -511,21 +511,21 @@ TEST_CASE("Scenario 12", "[Scenario]") {
 	auto s4 = ls::Snake(std::move(snake4), 95, ls::SnakeFlags::Player4);
 	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
 	
-    CHECK(state.getSnake(0).getDirection().isLeft());
-    CHECK(state.getSnake(1).getDirection().isLeft());
-    CHECK(state.getSnake(2).getDirection().isDown());
+	CHECK(state.getSnake(0).getDirection().isLeft());
+	CHECK(state.getSnake(1).getDirection().isLeft());
+	CHECK(state.getSnake(2).getDirection().isDown());
 	CHECK(state.getSnake(3).getDirection().isUp());
-    CHECK(state.getNumSnakes() == 4);
-    CHECK(state.getLivingSquads().size() == 4);
+	CHECK(state.getNumSnakes() == 4);
+	CHECK(state.getLivingSquads().size() == 4);
 	
-    const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
+	const auto createEvaluatorCallback = [](const State& state) -> Evaluator {
 		std::map<ls::SnakeFlags, StateOfMind> mindmap;
 		for (auto& squad : state.state.getLivingSquads())
 			mindmap.insert({squad, StateOfMind(squad)});
 		return Evaluator(state.getGamemode(), state.state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	};
 
-    std::map<ls::SnakeFlags, StateOfMind> mindmap;
+	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	for (auto& squad : state.getLivingSquads())
 		mindmap.insert({squad, StateOfMind(squad)});
 	Evaluator eval(gamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);

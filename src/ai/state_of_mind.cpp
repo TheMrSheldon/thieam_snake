@@ -6,7 +6,7 @@
 StateOfMind::StateOfMind(ls::SnakeFlags squad) noexcept : squad(squad) {}
 
 void StateOfMind::setTarget(StateOfMind::Target target) noexcept {
-    this->target = target;
+	this->target = target;
 }
 
 
