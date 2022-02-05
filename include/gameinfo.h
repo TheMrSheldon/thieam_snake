@@ -16,6 +16,7 @@ namespace GamemodeNames {
 	constexpr auto Royale = "royale";
 	constexpr auto Squad = "squad";
 	constexpr auto Constrictor = "constrictor";
+	constexpr auto Wrapped = "wrapped";
 }
 
 struct GameInfo {
@@ -88,8 +89,7 @@ struct GameInfo {
 		} else if (rules.name == GamemodeNames::Solo) {
 			return std::make_unique<ls::gm::ChallengeGamemode>();
 		} else if (rules.name == GamemodeNames::Royale) {
-			//return std::make_unique<ls::gm::RoyaleGamemode>();
-			throw std::runtime_error("The constrictor gamemode is not yet implemented");
+			return std::make_unique<ls::gm::StandardGamemode>();
 		} else if (rules.name == GamemodeNames::Squad) {
 			auto gm = std::make_unique<ls::gm::SquadGamemode>();
 			gm->setAllowBodyCollisions(rules.settings.squad.allowBodyCollisions);
@@ -100,6 +100,10 @@ struct GameInfo {
 		} else if (rules.name == GamemodeNames::Constrictor) {
 			//return std::make_unique<ls::gm::ConstrictorGamemode>();
 			throw std::runtime_error("The constrictor gamemode is not yet implemented");
+		} else if (rules.name == GamemodeNames::Wrapped) {
+			auto gm = std::make_unique<ls::gm::StandardGamemode>();
+			gm->setWrappedBoard(true);
+			return std::move(gm);
 		} else {
 			std::string msg = "The gamemode '"+rules.name+"' is unknown";
 			throw std::runtime_error(msg);

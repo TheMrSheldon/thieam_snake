@@ -18,9 +18,9 @@ TEST_CASE("Envbuffer State1", "[Envbuffer]") {
 	std::vector<ls::Position> snake1 = {{3,1},{4,1},{5,1},{5,2},{5,3},{4,3},{3,3},{2,3},{1,3}};
 	std::vector<ls::Position> snake2 = {{7,2},{7,3},{7,4},{7,5}};
 	std::vector<ls::Position> food = {{8,0},{1,1},{5,4},{4,5}};
-	auto s1 = ls::Snake(std::move(snake1), ls::Move::left, 82);
-	auto s2 = ls::Snake(std::move(snake2), ls::Move::down, 19);
-	auto state = ls::State(9,6, {s1, s2}, std::move(food));
+	auto s1 = ls::Snake(std::move(snake1), ls::Move::left, 82, ls::SnakeFlags::Player1);
+	auto s2 = ls::Snake(std::move(snake2), ls::Move::down, 19, ls::SnakeFlags::Player2);
+	auto state = ls::State(9,6, {s1, s2}, std::move(food), {});
 	EnvBuffer env(state.getNumSnakes(), state.getWidth(), state.getHeight());
 
 	SECTION("Clearing") {
@@ -77,9 +77,9 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	std::vector<ls::Position> snake1 = {{3,1},{4,1},{5,1},{5,2},{5,3},{4,3},{3,3},{2,3},{1,3}};
 	std::vector<ls::Position> snake2 = {{7,2},{7,3},{7,4},{7,5}};
 	std::vector<ls::Position> food = {{8,0},{1,1},{5,4},{4,5}};
-	auto s1 = ls::Snake(std::move(snake1), ls::Move::left, 82);
-	auto s2 = ls::Snake(std::move(snake2), ls::Move::down, 19);
-	auto state = ls::State(9,6, {s1, s2}, std::move(food));
+	auto s1 = ls::Snake(std::move(snake1), ls::Move::left, 82, ls::SnakeFlags::Player1);
+	auto s2 = ls::Snake(std::move(snake2), ls::Move::down, 19, ls::SnakeFlags::Player2);
+	auto state = ls::State(9,6, {s1, s2}, std::move(food), {});
 	
 	//Assert correct evaluation
 	StateOfMind mind(0);
@@ -166,9 +166,9 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	std::vector<ls::Position> snake1 = {{3,1}, {2,1}, {2,0}};
 	std::vector<ls::Position> snake2 = {{2,2}, {1,2}};
 	std::vector<ls::Position> food = {};
-	auto s1 = ls::Snake(std::move(snake1), ls::Move::up, 100);
-	auto s2 = ls::Snake(std::move(snake2), ls::Move::right, 100);
-	auto state = ls::State(4,4, {s1, s2}, std::move(food));
+	auto s1 = ls::Snake(std::move(snake1), ls::Move::up, 100, ls::SnakeFlags::Player1);
+	auto s2 = ls::Snake(std::move(snake2), ls::Move::right, 100, ls::SnakeFlags::Player2);
+	auto state = ls::State(4,4, {s1, s2}, std::move(food), {});
 
 	//Assert correct setup
 	REQUIRE(state.getWidth() == 4);
@@ -230,9 +230,9 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	std::vector<ls::Position> snake1 = {{3,1}, {2,1}, {2,0}, {1,0}, {0,0}};
 	std::vector<ls::Position> snake2 = {{2,2}, {1,2}};
 	std::vector<ls::Position> food = {};
-	auto s1 = ls::Snake(std::move(snake1), ls::Move::up, 100);
-	auto s2 = ls::Snake(std::move(snake2), ls::Move::right, 100);
-	auto state = ls::State(4,4, {s1, s2}, std::move(food));
+	auto s1 = ls::Snake(std::move(snake1), ls::Move::up, 100, ls::SnakeFlags::Player1);
+	auto s2 = ls::Snake(std::move(snake2), ls::Move::right, 100, ls::SnakeFlags::Player2);
+	auto state = ls::State(4,4, {s1, s2}, std::move(food), {});
 
 	//Assert correct setup
 	REQUIRE(state.getWidth() == 4);

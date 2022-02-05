@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <deque>
 
-Evaluator::Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const std::map<ls::SnakeFlags, StateOfMind>& mind) noexcept
+Evaluator::Evaluator(const ls::Gamemode& gamemode, size_t numSnakes, unsigned width, unsigned height, const std::map<ls::SnakeFlags, StateOfMind>& mind) noexcept
 	: gamemode(gamemode),  mind(mind), envbuffer(numSnakes, width, height) {}
 
 Evaluator::Evaluator(Evaluator&& other) noexcept : gamemode(other.gamemode), mind(other.mind), envbuffer(std::move(other.envbuffer)) {}

@@ -25,10 +25,11 @@ namespace rest::dto {
 		DTO_FIELD(Vector<Object<Battlesnake>>, snakes);
 
 		ls::State createState(const std::string& localPlayer) const noexcept {
-			std::vector<ls::Position> food = FromDTO(this->food);
+			const std::vector<ls::Position> food = FromDTO(this->food);
+			const std::vector<ls::Position> hazards = FromDTO(this->hazards);
 			const SquadInfo squads(snakes, localPlayer);
 			auto snakeData = std::move(squads.createSnakeVector(snakes));
-			return ls::State(*width, *height, std::move(snakeData), food);
+			return ls::State(*width, *height, std::move(snakeData), food, hazards);
 		}
 
 	private:
@@ -54,8 +55,9 @@ namespace rest::dto {
 					} else {
 						if (snake->squad && *(snake->squad) != "")
 							squads[*(snake->squad)] |= flag;
-						else
-							solos |= flag;
+						else //This is a dirty fix to temporarily disable Max^n search for more-player matches (TODO: remove)
+							//solos |= flag;
+							squads[""] |= flag;
 					}
 				}
 			}
@@ -110,9 +112,11 @@ namespace rest::dto {
 
 		static std::vector<ls::Position> FromDTO(const Vector<Object<Position>>& pos) {
 			std::vector<ls::Position> ret;
-			ret.reserve(pos->size());
-			for (auto& p : *pos)
-				ret.emplace_back(ls::Position(p->x, p->y));
+			if (pos != nullptr) {
+				ret.reserve(pos->size());
+				for (auto& p : *pos)
+					ret.emplace_back(ls::Position(p->x, p->y));
+			}
 			return std::move(ret);
 		}
 	};

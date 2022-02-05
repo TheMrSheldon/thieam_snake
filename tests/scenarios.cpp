@@ -44,7 +44,7 @@ TEST_CASE("Scenario 1", "[Scenario]") {
 	std::vector<ls::Position> food = {{0,0},{10,0},{1,1},{3,1},{0,2},{0,4},{0,5},{0,6},{0,7},{2,7},{0,8},{4,8},{5,9},{9,9},{0,10},{4,10},{6,10},{9,10},{10,0}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
-	auto state = ls::State(11,11, {s1, s2}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isUp());
 	CHECK(state.getSnake(1).getDirection().isRight());
@@ -82,7 +82,7 @@ TEST_CASE("Scenario 1 -- swapped", "[Scenario]") {
 	std::vector<ls::Position> food = {{0,0},{10,0},{1,1},{3,1},{0,2},{0,4},{0,5},{0,6},{0,7},{2,7},{0,8},{4,8},{5,9},{9,9},{0,10},{4,10},{6,10},{9,10},{10,0}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
-	auto state = ls::State(11,11, {s1, s2}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isRight());
 	CHECK(state.getSnake(1).getDirection().isUp());
@@ -120,7 +120,7 @@ TEST_CASE("Scenario 2", "[Scenario]") {
 	std::vector<ls::Position> food = {{0,0},{0,8},{2,9},{2,10},{9,10},{10,2},{10,8},{10,9},{10,10}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
-	auto state = ls::State(11,11, {s1, s2}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isUp());
 	CHECK(state.getSnake(1).getDirection().isRight());
@@ -158,7 +158,7 @@ TEST_CASE("Scenario 2 -- swapped", "[Scenario]") {
 	std::vector<ls::Position> food = {{0,0},{0,8},{2,9},{2,10},{9,10},{10,2},{10,8},{10,9},{10,10}};
 	auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
-	auto state = ls::State(11,11, {s1, s2}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isRight());
 	CHECK(state.getSnake(1).getDirection().isUp());
@@ -273,7 +273,7 @@ TEST_CASE("Scenario 7", "[Scenario]") {
 	//std::vector<ls::Position> food = {/*TODO*/};
 	//auto s1 = ls::Snake(std::move(snake1), 98, ls::SnakeFlags::ByIndex(0));
 	//auto s2 = ls::Snake(std::move(snake2), 80, ls::SnakeFlags::ByIndex(1));
-	//auto state = ls::State(11,11, {s1, s2}, std::move(food));
+	//auto state = ls::State(11,11, {s1, s2}, std::move(food), {});
 	//
 	//CHECK(state.getSnake(0).getDirection().isRight());
 	//CHECK(state.getSnake(1).getDirection().isRight());
@@ -311,7 +311,7 @@ TEST_CASE("Scenario 8", "[Scenario]") {
 	std::vector<ls::Position> food = {{2,3},{4,8},{4,9}};
 	auto s1 = ls::Snake(std::move(snake1), 80, ls::SnakeFlags::ByIndex(0));
 	auto s2 = ls::Snake(std::move(snake2), 98, ls::SnakeFlags::ByIndex(1));
-	auto state = ls::State(11,11, {s1, s2}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isLeft());
 	CHECK(state.getSnake(1).getDirection().isDown());
@@ -363,7 +363,7 @@ TEST_CASE("Scenario 9", "[Scenario]") {
 	auto s2 = ls::Snake(std::move(snake2), 90, ls::SnakeFlags::Player1 | ls::SnakeFlags::Player2);
 	auto s3 = ls::Snake(std::move(snake3), 90, ls::SnakeFlags::Player3 | ls::SnakeFlags::Player4);
 	auto s4 = ls::Snake(std::move(snake4), 90, ls::SnakeFlags::Player3 | ls::SnakeFlags::Player4);
-	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isLeft());
 	CHECK(state.getSnake(1).getDirection().isLeft());
@@ -419,7 +419,7 @@ TEST_CASE("Scenario 10", "[Scenario]") {
 	auto s1 = ls::Snake(std::move(snake1), 88, ls::SnakeFlags::Player1);
 	auto s2 = ls::Snake(std::move(snake2), 75, ls::SnakeFlags::Player2);
 	auto s3 = ls::Snake(std::move(snake3), 98, ls::SnakeFlags::Player3);
-	auto state = ls::State(11,11, {s1, s2, s3}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2, s3}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isRight());
 	CHECK(state.getSnake(1).getDirection().isUp());
@@ -464,7 +464,7 @@ TEST_CASE("Scenario 11", "[Scenario]") {
 	auto s2 = ls::Snake(std::move(snake2), 98, ls::SnakeFlags::Player2);
 	auto s3 = ls::Snake(std::move(snake3), 99, ls::SnakeFlags::Player3);
 	auto s4 = ls::Snake(std::move(snake4), 94, ls::SnakeFlags::Player4);
-	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isDown());
 	CHECK(state.getSnake(1).getDirection().isRight());
@@ -509,7 +509,7 @@ TEST_CASE("Scenario 12", "[Scenario]") {
 	auto s2 = ls::Snake(std::move(snake2), 84, ls::SnakeFlags::Player2);
 	auto s3 = ls::Snake(std::move(snake3), 94, ls::SnakeFlags::Player3);
 	auto s4 = ls::Snake(std::move(snake4), 95, ls::SnakeFlags::Player4);
-	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food));
+	auto state = ls::State(11,11, {s1, s2, s3, s4}, std::move(food), {});
 	
 	CHECK(state.getSnake(0).getDirection().isLeft());
 	CHECK(state.getSnake(1).getDirection().isLeft());
@@ -539,27 +539,27 @@ TEST_CASE("Scenario 12", "[Scenario]") {
 
 	//Check for reordering
 	{//243
-		auto state = ls::State(11,11, {s1, s2, s4, s3}, std::move(food));
+		auto state = ls::State(11,11, {s1, s2, s4, s3}, std::move(food), {});
 		auto score = Search::maxN(State(gamemode, state).afterMove(ls::Move::left), 8, eval);
 		CHECK(score[ls::SnakeFlags::Player1] <= -1000); //Moving left is a losing move
 		CHECK_FALSE(search.findBestMove(State(gamemode, state), createEvaluatorCallback).isLeft());
 	}{//324
-		auto state = ls::State(11,11, {s1, s3, s2, s4}, std::move(food));
+		auto state = ls::State(11,11, {s1, s3, s2, s4}, std::move(food), {});
 		auto score = Search::maxN(State(gamemode, state).afterMove(ls::Move::left), 8, eval);
 		CHECK(score[ls::SnakeFlags::Player1] <= -1000); //Moving left is a losing move
 		CHECK_FALSE(search.findBestMove(State(gamemode, state), createEvaluatorCallback).isLeft());
 	}{//342
-		auto state = ls::State(11,11, {s1, s3, s4, s2}, std::move(food));
+		auto state = ls::State(11,11, {s1, s3, s4, s2}, std::move(food), {});
 		auto score = Search::maxN(State(gamemode, state).afterMove(ls::Move::left), 8, eval);
 		CHECK(score[ls::SnakeFlags::Player1] <= -1000); //Moving left is a losing move
 		CHECK_FALSE(search.findBestMove(State(gamemode, state), createEvaluatorCallback).isLeft());
 	}{//423
-		auto state = ls::State(11,11, {s1, s4, s2, s3}, std::move(food));
+		auto state = ls::State(11,11, {s1, s4, s2, s3}, std::move(food), {});
 		auto score = Search::maxN(State(gamemode, state).afterMove(ls::Move::left), 8, eval);
 		CHECK(score[ls::SnakeFlags::Player1] <= -1000); //Moving left is a losing move
 		CHECK_FALSE(search.findBestMove(State(gamemode, state), createEvaluatorCallback).isLeft());
 	}{//432
-		auto state = ls::State(11,11, {s1, s4, s3, s2}, std::move(food));
+		auto state = ls::State(11,11, {s1, s4, s3, s2}, std::move(food), {});
 		auto score = Search::maxN(State(gamemode, state).afterMove(ls::Move::left), 8, eval);
 		CHECK(score[ls::SnakeFlags::Player1] <= -1000); //Moving left is a losing move
 		CHECK_FALSE(search.findBestMove(State(gamemode, state), createEvaluatorCallback).isLeft());

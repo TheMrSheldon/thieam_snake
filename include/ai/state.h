@@ -37,7 +37,7 @@ public:
 	size_t getNumPlayers() const noexcept {
 		//return state.getNumSnakes();
 		const auto& squads = state.getLivingSquads();
-		return std::accumulate(squads.begin(), squads.end(), 0, [](int left, const ls::SnakeFlags& right){ return left+right.size(); });
+		return std::accumulate(squads.begin(), squads.end(), (size_t)0, [](size_t left, const ls::SnakeFlags& right){ return left+right.size(); });
 	}
 
 	ls::SnakeFlags getCurrentParty() const noexcept {

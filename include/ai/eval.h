@@ -146,7 +146,7 @@ private:
 	Evaluator(const Evaluator& other) = delete;
 	Evaluator& operator=(const Evaluator& other) = delete;
 public:
-	Evaluator(const ls::Gamemode& gamemode, unsigned numSnakes, unsigned width, unsigned height, const std::map<ls::SnakeFlags, StateOfMind>& mind) noexcept;
+	Evaluator(const ls::Gamemode& gamemode, size_t numSnakes, unsigned width, unsigned height, const std::map<ls::SnakeFlags, StateOfMind>& mind) noexcept;
 	Evaluator(Evaluator&& other) noexcept;
 
 	const EnvBuffer& getEnvBuffer() const noexcept { return envbuffer; }

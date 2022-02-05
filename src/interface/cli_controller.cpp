@@ -100,11 +100,11 @@ static std::pair<cli::detail::KeyType, char> GetKey() {
 #endif
 }
 
-static void _PrintBoard(std::ostream& out, unsigned width, unsigned height, ls::Position selected, ls::Foods& food, std::vector<std::vector<ls::Position>>& snakes) {
-	ls::State::drawBoard(out, width, height, [&out, selected, food, snakes](const ls::Position& pos){
+static void _PrintBoard(std::ostream& out, unsigned width, unsigned height, ls::Position selected, ls::FieldFlags& fields, std::vector<std::vector<ls::Position>>& snakes) {
+	ls::State::drawBoard(out, width, height, [&out, selected, fields, snakes](const ls::Position& pos){
 		if (selected == pos)
 			out << rang::fg::blue;
-		if (food.get(pos.x, pos.y))
+		if (fields.getFood(pos))
 			out << 'o';
 		else {
 			unsigned snake = 0;
@@ -121,11 +121,11 @@ static void _PrintBoard(std::ostream& out, unsigned width, unsigned height, ls::
 	});
 }
 
-static void _PlaceFood(std::ostream& out, unsigned width, unsigned height, ls::Foods& food, std::vector<std::vector<ls::Position>>& snakes) {
+static void _PlaceFood(std::ostream& out, unsigned width, unsigned height, ls::FieldFlags& fields, std::vector<std::vector<ls::Position>>& snakes) {
 	ls::Position selected(0,0);
 	while (true) {
 		std::cout << rang::style::bold << '['<<(char)0x10<<(char)0x11<<(char)0x1E<<(char)0x1F<<"] to move the selection; [Space] to (un)place food; [ESC] to exit placement" << rang::style::reset << std::endl;
-		_PrintBoard(out, width, height, selected, food, snakes);
+		_PrintBoard(out, width, height, selected, fields, snakes);
 		auto in = GetKey();
 		if (in.first == cli::detail::KeyType::eof) {
 			ClearLastLines(out, height+3);
@@ -139,19 +139,19 @@ static void _PlaceFood(std::ostream& out, unsigned width, unsigned height, ls::F
 		} else if (in.first == cli::detail::KeyType::right) {
 			selected = selected.after_move(ls::Move::right);
 		} else if (in.first == cli::detail::KeyType::ascii && in.second == ' ') {
-			food.set(selected, !food.get(selected.x, selected.y));
+			fields.setFood(selected, !fields.getFood(selected));
 		}
 		selected = selected.clamp({0,0}, {(int)width-1, (int)height-1});
 		ClearLastLines(out, height+3);
 	}
 }
 
-static void _PlaceSnake(std::ostream& out, unsigned width, unsigned height, unsigned snake, ls::Foods& food, std::vector<std::vector<ls::Position>>& snakes) {
+static void _PlaceSnake(std::ostream& out, unsigned width, unsigned height, unsigned snake, ls::FieldFlags& fields, std::vector<std::vector<ls::Position>>& snakes) {
 	ls::Position selected(0,0);
 	//Place Head
 	while (true) {
 		std::cout << rang::style::bold << '[' << (char)0x10<<(char)0x11<<(char)0x1E<<(char)0x1F<<"] to move the selection; [Space] to place snake-head            " << rang::style::reset << std::endl;
-		_PrintBoard(out, width, height, selected, food, snakes);
+		_PrintBoard(out, width, height, selected, fields, snakes);
 		auto in = GetKey();
 		if (in.first == cli::detail::KeyType::eof) {
 			ClearLastLines(out, height+3);
@@ -175,7 +175,7 @@ static void _PlaceSnake(std::ostream& out, unsigned width, unsigned height, unsi
 	//Place Body using arrow-keys
 	while(true) {
 		std::cout << rang::style::bold << '['<<(char)0x10<<(char)0x11<<(char)0x1E<<(char)0x1F<<"] to place the body; [ESC] to exit placement" << rang::style::reset << std::endl;
-		_PrintBoard(out, width, height, selected, food, snakes);
+		_PrintBoard(out, width, height, selected, fields, snakes);
 		auto in = GetKey();
 		if (in.first == cli::detail::KeyType::eof) {
 			ClearLastLines(out, height+3);
@@ -210,18 +210,18 @@ static ls::State _InputGameState(std::ostream& out) {
 	out << "#Snakes: " << std::flush;
 	std::cin >> numSnakes;
 	ls::Position selected(0,0);
-	ls::Foods food(width, height);
+	ls::FieldFlags fields(width, height);
 	std::vector<std::vector<ls::Position>> snakes(numSnakes, std::vector<ls::Position>());
-	_PlaceFood(out, width, height, food, snakes);
+	_PlaceFood(out, width, height, fields, snakes);
 	for (unsigned i = 0; i < numSnakes; i++)
-		_PlaceSnake(out, width, height, i, food, snakes);
+		_PlaceSnake(out, width, height, i, fields, snakes);
 
 	std::vector<ls::Snake> sd;
 	for (auto& body : snakes) {
 		//std::reverse(body.begin(), body.end());
 		sd.emplace_back(std::move(body), 100, ls::SnakeFlags::ByIndex(sd.size()));
 	}
-	return ls::State(width, height, std::move(sd), std::move(food));
+	return ls::State(width, height, std::move(sd), std::move(fields));
 }
 
 static void EvalCmd(std::ostream& out) {
