@@ -30,7 +30,7 @@ ls::Move Robin::getAction(const GameInfo& info, uint32_t turn, ls::State& state)
 	};
 	Search<State, ls::Move, Evaluator, ls::SnakeFlags> search({.initialDepth = 10, .timeout = info.timeout-50});
 	const auto gamemode = info.constructGamemode();
-	return search.findBestMove(State(*gamemode, state), createEvaluatorCallback);
+	return search.findBestMove(State(*gamemode, turn, state), createEvaluatorCallback);
 }
 
 void Robin::endGame(const GameInfo& info) {

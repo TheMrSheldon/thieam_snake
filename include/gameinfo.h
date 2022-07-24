@@ -9,6 +9,7 @@
 #include <libsnake/gamemodes/standard.h>
 #include <libsnake/gamemodes/challenge.h>
 #include <libsnake/gamemodes/squad.h>
+#include <libsnake/map.h>
 
 namespace GamemodeNames {
 	constexpr auto Standard = "standard";
@@ -21,6 +22,7 @@ namespace GamemodeNames {
 
 struct GameInfo {
 	std::string id;
+	std::string map;
 	uint32_t timeout;
 	std::string source;
 	struct {
@@ -84,14 +86,31 @@ struct GameInfo {
 	} rules;
 	
 	std::unique_ptr<ls::Gamemode> constructGamemode() const {
+		const auto& map = ls::map::getMap(this->map);
 		if (rules.name == GamemodeNames::Standard) {
-			return std::make_unique<ls::gm::StandardGamemode>();
+			auto gm = std::make_unique<ls::gm::StandardGamemode>(map);
+			gm->setFoodSpawnChance(rules.settings.foodSpawnChance);
+			gm->setMinimumFood(rules.settings.minimumFood);
+			gm->setHazardDamagePerTurn(rules.settings.hazardDamagePerTurn);
+			return std::move(gm);
 		} else if (rules.name == GamemodeNames::Solo) {
-			return std::make_unique<ls::gm::ChallengeGamemode>();
+			auto gm = std::make_unique<ls::gm::ChallengeGamemode>(map);
+			gm->setFoodSpawnChance(rules.settings.foodSpawnChance);
+			gm->setMinimumFood(rules.settings.minimumFood);
+			gm->setHazardDamagePerTurn(rules.settings.hazardDamagePerTurn);
+			return std::move(gm);
 		} else if (rules.name == GamemodeNames::Royale) {
-			return std::make_unique<ls::gm::StandardGamemode>();
+			auto gm = std::make_unique<ls::gm::StandardGamemode>(map);
+			gm->setFoodSpawnChance(rules.settings.foodSpawnChance);
+			gm->setMinimumFood(rules.settings.minimumFood);
+			gm->setHazardDamagePerTurn(rules.settings.hazardDamagePerTurn);
+			//gm->setShrinkEveryNTurns(rules.settings.royale.shrinkEveryNTurns); //TODO: implement
+			return std::move(gm);
 		} else if (rules.name == GamemodeNames::Squad) {
-			auto gm = std::make_unique<ls::gm::SquadGamemode>();
+			auto gm = std::make_unique<ls::gm::SquadGamemode>(map);
+			gm->setFoodSpawnChance(rules.settings.foodSpawnChance);
+			gm->setMinimumFood(rules.settings.minimumFood);
+			gm->setHazardDamagePerTurn(rules.settings.hazardDamagePerTurn);
 			gm->setAllowBodyCollisions(rules.settings.squad.allowBodyCollisions);
 			gm->setSharedElimination(rules.settings.squad.sharedElimination);
 			gm->setSharedHealth(rules.settings.squad.sharedHealth);
@@ -101,7 +120,10 @@ struct GameInfo {
 			//return std::make_unique<ls::gm::ConstrictorGamemode>();
 			throw std::runtime_error("The constrictor gamemode is not yet implemented");
 		} else if (rules.name == GamemodeNames::Wrapped) {
-			auto gm = std::make_unique<ls::gm::StandardGamemode>();
+			auto gm = std::make_unique<ls::gm::StandardGamemode>(map);
+			gm->setFoodSpawnChance(rules.settings.foodSpawnChance);
+			gm->setMinimumFood(rules.settings.minimumFood);
+			gm->setHazardDamagePerTurn(rules.settings.hazardDamagePerTurn);
 			gm->setWrappedBoard(true);
 			return std::move(gm);
 		} else {

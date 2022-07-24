@@ -9,17 +9,22 @@
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace rest::dto {
+	/**
+	 * @brief https://docs.battlesnake.com/references/api#game
+	 */
 	class Game : public oatpp::DTO {
 		DTO_INIT(Game, DTO)
 		
 		DTO_FIELD(String, id);
 		DTO_FIELD(Object<Ruleset>, ruleset);
+		DTO_FIELD(String, map);
 		DTO_FIELD(UInt32, timeout);
 		DTO_FIELD(String, source);
 
 		GameInfo createGameInfo() const noexcept {
 			return GameInfo{
 				.id = this->id,
+				.map = this->map,
 				.timeout = this->timeout,
 				.source = this->source,
 				.rules = {

@@ -12,6 +12,8 @@
 #include <map>
 #include <vector>
 
+//TODO: update evaluation to work with wrapped boards
+
 struct SnakeEval final {
 	unsigned mobility;
 	unsigned border;

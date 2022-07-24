@@ -8,9 +8,14 @@
 #include <libsnake/position.h>
 #include <libsnake/util.h>
 #include <libsnake/state.h>
+#include <libsnake/maps/empty.h>
+#include <libsnake/gamemodes/standard.h>
 #include <functional>
 #include <vector>
 #include <iomanip>
+
+static ls::map::Empty emptyMap;
+static ls::gm::StandardGamemode standardGamemode(emptyMap);
 
 static const rang::fg SnakeColors[] = {
 	rang::fg::blue, rang::fg::green, rang::fg::magenta, rang::fg::yellow,
@@ -231,7 +236,7 @@ static void EvalCmd(std::ostream& out) {
 	for (auto& snake : state.getSnakes())
 		mindmap.insert({snake.getSquad(), mind});
 	
-	Evaluator eval(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
+	Evaluator eval(standardGamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	const auto e = eval.evaluate(state, 1);
 	out << "Evaluating state\n";
 	out << state << "\n";
