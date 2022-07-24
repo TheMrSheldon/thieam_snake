@@ -17,10 +17,11 @@ public:
 	const LGamemode& gamemode;
 	const std::vector<ls::Move> moves;
 	LState state;
+	uint32_t fullTurn;
 
 public:
-	State(const LGamemode& gamemode, LState state) : gamemode(gamemode), state(state), moves() {}
-	State(const LGamemode& gamemode, LState state, std::vector<ls::Move>&& moves) : gamemode(gamemode), state(state), moves(moves) {}
+	State(const LGamemode& gamemode, uint32_t fullTurn, LState state) : gamemode(gamemode), fullTurn(fullTurn), state(state), moves() {}
+	State(const LGamemode& gamemode, uint32_t fullTurn, LState state, std::vector<ls::Move>&& moves) : gamemode(gamemode), fullTurn(fullTurn), state(state), moves(moves) {}
 
 	const ls::Gamemode& getGamemode() const noexcept {
 		return gamemode;
@@ -65,7 +66,7 @@ public:
 		while (newMoves.size() < state.getSnakes().size() && state.getSnake(newMoves.size()).isDead())
 			newMoves.emplace_back(ls::Move::none);
 		if (newMoves.size() == state.getNumSnakes())
-			return State(gamemode, gamemode.stepState(state, newMoves));
-		return State(gamemode, state, std::move(newMoves));
+			return State(gamemode, fullTurn+1, gamemode.stepState(state, fullTurn, newMoves));
+		return State(gamemode, fullTurn, state, std::move(newMoves));
 	}
 };

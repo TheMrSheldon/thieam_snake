@@ -6,6 +6,9 @@
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace rest::dto {
+	/**
+	 * @brief https://docs.battlesnake.com/references/api#rulesetsettings
+	 */
 	class RulesetSettings : public oatpp::DTO {
 		DTO_INIT(RulesetSettings, DTO)
 		

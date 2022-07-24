@@ -2,7 +2,13 @@
 
 #include <ai/eval.h>
 
+#include <libsnake/gamemodes/standard.h>
+#include <libsnake/maps/empty.h>
+
 #include <vector>
+
+static ls::map::Empty emptyMap;
+static ls::gm::StandardGamemode standardGamemode(emptyMap);
 
 TEST_CASE("Envbuffer State1", "[Envbuffer]") {
 	/**
@@ -86,7 +92,7 @@ TEST_CASE("Evaluate State1", "[Evaluation]") {
 	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	for (auto& snake : state.getSnakes())
 		mindmap.insert({snake.getSquad(), mind});
-	Evaluator evaluator(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
+	Evaluator evaluator(standardGamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -182,7 +188,7 @@ TEST_CASE("Evaluate State2", "[Evaluation]") {
 	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	for (auto& snake : state.getSnakes())
 		mindmap.insert({snake.getSquad(), mind});
-	Evaluator evaluator(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
+	Evaluator evaluator(standardGamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);
@@ -246,7 +252,7 @@ TEST_CASE("Evaluate State3", "[Evaluation]") {
 	std::map<ls::SnakeFlags, StateOfMind> mindmap;
 	for (auto& snake : state.getSnakes())
 		mindmap.insert({snake.getSquad(), mind});
-	Evaluator evaluator(ls::gm::Standard, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
+	Evaluator evaluator(standardGamemode, state.getNumSnakes(), state.getWidth(), state.getHeight(), mindmap);
 	auto eval = evaluator.evaluate(state, 1);
 	CHECK(eval.winner == ls::SnakeFlags::None);
 	REQUIRE(eval.snakes.size() == 2);

@@ -21,6 +21,9 @@
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 namespace rest {
+	/**
+	 * @brief Implements a HTTP-endpoint as specified in https://docs.battlesnake.com/references/api.
+	 */
 	class Controller : public oatpp::web::server::api::ApiController {
 	private:
 		Agent& agent;
@@ -33,6 +36,9 @@ namespace rest {
 		 */
 		Controller(Agent& agent, OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)) : oatpp::web::server::api::ApiController(objectMapper), agent(agent) {}
 	public:
+		/**
+		 * @brief https://docs.battlesnake.com/references/api#get
+		 */
 		ENDPOINT("GET", "/", root) {
 			auto dto = rest::dto::SnakeInfo::createShared();
 			dto->apiversion = "1";
@@ -44,6 +50,9 @@ namespace rest {
 			return createDtoResponse(Status::CODE_200, dto);
 		}
 		
+		/**
+		 * @brief https://docs.battlesnake.com/references/api#post-start
+		 */
 		ENDPOINT("POST", "/start", start, BODY_DTO(Object<rest::dto::Gameinfo>, body)) {
 			agent.startGame(body->game->createGameInfo());
 			return createResponse(Status::CODE_200, "OK");

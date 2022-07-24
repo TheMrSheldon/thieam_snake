@@ -27,6 +27,7 @@ endif()
 FetchContent_Declare(
 	libsnake_lib
 	GIT_REPOSITORY https://github.com/TheMrSheldon/libsnake.git
+	GIT_TAG maps
 )
 FetchContent_MakeAvailable(libsnake_lib)
 FetchContent_GetProperties(libsnake_lib)
